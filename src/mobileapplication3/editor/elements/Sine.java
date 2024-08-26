@@ -6,7 +6,6 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -336,7 +335,7 @@ public class Sine extends AbstractCurve {
     	calcAnchorPoint();
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
         if (pointsCache == null) {
             genPoints();
         }
@@ -352,7 +351,7 @@ public class Sine extends AbstractCurve {
             int y1 = yToPX(startPoint[1], zoomOut, offsetY);
             int x2 = xToPX(endPoint[0], zoomOut, offsetX);
             int y2 = yToPX(endPoint[1], zoomOut, offsetY);
-            Utils.drawLine(g, x1, y1, x2, y2, LINE_THICKNESS, zoomOut);
+            g.drawLine(x1, y1, x2, y2, LINE_THICKNESS, zoomOut, drawThickness);
             if (i % 2 == 0) {
 	            int dx = x2 - x1;
 	            int dy = y2 - y1;
@@ -360,7 +359,7 @@ public class Sine extends AbstractCurve {
 	            int centerX = (x1 + x2) / 2;
 	            int centerY = (y1 + y2) / 2;
 	            int lzoomout = l * zoomOut;
-	            Utils.drawArrow(g, centerX, centerY, centerX + dy * 50000 / lzoomout, centerY - dx * 50000 / lzoomout, LINE_THICKNESS/6, zoomOut);
+	            g.drawArrow(centerX, centerY, centerX + dy * 50000 / lzoomout, centerY - dx * 50000 / lzoomout, LINE_THICKNESS/6, zoomOut, drawThickness);
             }
             startPoint = endPoint;
         }

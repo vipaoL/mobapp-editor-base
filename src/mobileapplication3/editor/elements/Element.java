@@ -141,7 +141,7 @@ public abstract class Element {
     
     public abstract PlacementStep[] getExtraEditingSteps();
     
-    public abstract void paint(Graphics g, int zoomOut, int offsetX, int offsetY);
+    public abstract void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness);
     
     public abstract Element setArgs(short[] args);
     

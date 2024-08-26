@@ -38,7 +38,7 @@ public class EndPoint extends Element {
         return new PlacementStep[0];
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
         int r = 3;
         int prevColor = g.getColor();
         g.setColor(0xff0000);

@@ -5,7 +5,6 @@
  */
 package mobileapplication3.editor.elements;
 
-import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -78,8 +77,8 @@ public class Line extends Element {
         y2 = y;
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY) {
-        Utils.drawLine(g, xToPX(x1, zoomOut, offsetX), yToPX(y1, zoomOut, offsetY), xToPX(x2, zoomOut, offsetX), yToPX(y2, zoomOut, offsetY), LINE_THICKNESS, zoomOut);
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+        g.drawLine(xToPX(x1, zoomOut, offsetX), yToPX(y1, zoomOut, offsetY), xToPX(x2, zoomOut, offsetX), yToPX(y2, zoomOut, offsetY), LINE_THICKNESS, zoomOut, drawThickness);
     }
     
     public Element setArgs(short[] args) {

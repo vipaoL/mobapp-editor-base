@@ -1,7 +1,6 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Graphics;
 
 public class Accelerator extends Element {
@@ -52,7 +51,7 @@ public class Accelerator extends Element {
 		return new PlacementStep[0];
 	}
 
-	public void paint(Graphics g, int zoomOut, int offsetX, int offsetY) {
+	public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
 		int dx = (int) (l * Mathh.cos(angle) / 1000);
         int dy = (int) (l * Mathh.sin(angle) / 1000);
         int colorModifier = (m - 100) * 3;
@@ -63,24 +62,26 @@ public class Accelerator extends Element {
             blue = 50;
         }
         g.setColor(red, 0, blue);
-		Utils.drawLine(g,
+		g.drawLine(
 				xToPX(x - dx/2, zoomOut, offsetX),
                 yToPX(y - dy/2, zoomOut, offsetY),
                 xToPX(x + dx/2, zoomOut, offsetX),
                 yToPX(y + dy/2, zoomOut, offsetY),
                 thickness,
                 zoomOut,
+                drawThickness,
                 false,
                 true);
         int vectorX = m * Mathh.cos(angle + 15 + directionOffset) / 1000;
         int vectorY = m * Mathh.sin(angle + 15 + directionOffset) / 1000;
-        Utils.drawArrow(g,
+        g.drawArrow(
         		xToPX(x, zoomOut, offsetX),
                 yToPX(y, zoomOut, offsetY),
                 xToPX(x + vectorX, zoomOut, offsetX),
                 yToPX(y + vectorY, zoomOut, offsetY),
                 thickness / 4,
-                zoomOut);
+                zoomOut,
+                drawThickness);
 	}
 	
 	private short[] getZeros() {

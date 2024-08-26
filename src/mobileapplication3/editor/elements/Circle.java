@@ -369,7 +369,7 @@ public class Circle extends AbstractCurve {
         }
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
     	int centerMarkR = 4;
     	int leftX = xToPX(x - centerMarkR, zoomOut, offsetX);
     	int rightX = xToPX(x + centerMarkR, zoomOut, offsetX);
@@ -377,7 +377,7 @@ public class Circle extends AbstractCurve {
     	int bottomY = yToPX(y + centerMarkR, zoomOut, offsetY);
     	g.drawLine(leftX, topY, rightX, bottomY);
     	g.drawLine(rightX, topY, leftX, bottomY);
-    	super.paint(g, zoomOut, offsetX, offsetY);
+    	super.paint(g, zoomOut, offsetX, offsetY, drawThickness);
     }
     
     public void recalcCalculatedArgs() { }

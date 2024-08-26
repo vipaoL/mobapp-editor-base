@@ -57,7 +57,7 @@ public class StructureViewerComponent extends UIComponent { // TODO: merge with 
             	} else {
             		g.setColor(colBody);
             	}
-	            element.paint(g, zoomOut, x0 + offsetX, y0 + offsetY);
+	            element.paint(g, zoomOut, x0 + offsetX, y0 + offsetY, true);
         	} catch (Exception ex) { }
         }
     }

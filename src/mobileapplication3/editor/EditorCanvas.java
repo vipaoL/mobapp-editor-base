@@ -21,7 +21,7 @@ public class EditorCanvas extends UIComponent {
     
     private static final int MIN_ZOOM_OUT = 8;
 	private static final int MAX_ZOOM_OUT = 200000;
-	public static int zoomoutThresholdMacroMode = 200;
+	private static int zoomoutThresholdMacroMode = 200;
     private StructureBuilder structurePlacer;
     private Car car = new Car();
     private int colBg = 0x000000;
@@ -94,7 +94,7 @@ public class EditorCanvas extends UIComponent {
 	            		g.setColor(colBody);
 	            	}
 	            }
-	            element.paint(g, zoomOut, x0 + offsetX, y0 + offsetY);
+	            element.paint(g, zoomOut, x0 + offsetX, y0 + offsetY, zoomOut > zoomoutThresholdMacroMode);
         	} catch (Exception ex) { }
         }
     }

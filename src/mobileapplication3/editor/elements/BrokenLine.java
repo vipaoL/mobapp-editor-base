@@ -6,7 +6,6 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -90,7 +89,7 @@ public class BrokenLine extends Line {
         return super.getExtraEditingSteps();
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
         int dx = x2 - x1;
         int dy = y2 - y1;
                 
@@ -103,12 +102,14 @@ public class BrokenLine extends Line {
         int platfDy = (dy+spY) / n;
         
         for (int i = 0; i < n; i++) {
-            Utils.drawLine(g, xToPX(x1 + i * platfDx, zoomOut, offsetX),
+            g.drawLine(
+            		xToPX(x1 + i * platfDx, zoomOut, offsetX),
                     yToPX(y1 + i * platfDy, zoomOut, offsetY),
                     xToPX(x1 + (i + 1) * platfDx - spX, zoomOut, offsetX),
                     yToPX(y1 + (i + 1) * platfDy - spY, zoomOut, offsetY),
                     thickness,
                     zoomOut,
+                    drawThickness,
                     false,
                     true);
         }
