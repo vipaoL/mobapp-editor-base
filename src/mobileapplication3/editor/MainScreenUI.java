@@ -7,9 +7,9 @@ package mobileapplication3.editor;
 
 import mobileapplication3.editor.elements.Element;
 import mobileapplication3.editor.elements.StartPoint;
+import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Font;
 import mobileapplication3.platform.ui.Graphics;
-import mobileapplication3.platform.ui.Platform;
 import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.AbstractButtonSet;
 import mobileapplication3.ui.Button;
