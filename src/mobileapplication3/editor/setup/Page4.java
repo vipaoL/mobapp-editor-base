@@ -7,7 +7,6 @@ package mobileapplication3.editor.setup;
 
 import mobileapplication3.editor.EditorSettings;
 import mobileapplication3.platform.FileUtils;
-import mobileapplication3.platform.Paths;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Graphics;
 import mobileapplication3.ui.AbstractPopupWindow;
@@ -67,7 +66,7 @@ public class Page4 extends AbstractSetupWizardPage {
     private void fillList() {
         (new Thread(new Runnable() {
             public void run() {
-                String[] folders = Paths.getAllMGStructsFolders();
+                String[] folders = FileUtils.getAllPlaces("MGStructs"); // TODO make constant
                 listButtons = new Button[folders.length];
                 for (int i = 0; i < folders.length; i++) {
                     listButtons[i] = new Button(folders[i]) {
