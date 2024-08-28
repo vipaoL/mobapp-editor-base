@@ -434,7 +434,9 @@ public class MainScreenUI extends Container {
     }
     
     public void paint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
-    	startPointWarning.setVisible(!StartPoint.checkStartPoint(elementsBuffer.getElementsAsArray()));
+        if (startPointWarning != null) {
+            startPointWarning.setVisible(!StartPoint.checkStartPoint(elementsBuffer.getElementsAsArray()));
+        }
     	super.paint(g, x0, y0, w, h, forceInactive);
     }
     
