@@ -215,7 +215,9 @@ public class PathPicker extends Container {
     }
     
     public Container setBgImage(Image bg) {
-        blurImg(bg);
+        if (bg != null) {
+            bg.blur();
+        }
         return super.setBgImage(bg);
     }
     
