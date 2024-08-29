@@ -25,6 +25,9 @@ import mobileapplication3.ui.UIComponent;
  */
 public class About extends AbstractPopupWindow {
     private static final String LINK = "https://github.com/vipaoL/mobapp-editor";
+    private static final String LINK_PREVIEW = "vipaoL/mobapp-editor";
+    private static final String LINK2 = "https://t.me/mobapp_game";
+    private static final String LINK2_PREVIEW = "@mobapp_game";
 
     public About(IPopupFeedback parent) {
         super("About", parent);
@@ -72,9 +75,14 @@ public class About extends AbstractPopupWindow {
         }
 
         Button[] settingsButtons = new Button[]{
-            new Button("Open GitHub " + LINK) {
+            new Button("Open GitHub " + LINK_PREVIEW) {
                 public void buttonPressed() {
                     Platform.platformRequest(LINK);
+                }
+            }.setBgColor(COLOR_ACCENT),
+            new Button("Open TG channel " + LINK2_PREVIEW) {
+                public void buttonPressed() {
+                    Platform.platformRequest(LINK2);
                 }
             }.setBgColor(COLOR_ACCENT)
         };
@@ -94,7 +102,7 @@ public class About extends AbstractPopupWindow {
 
             @Override
             protected void onSetBounds(int x0, int y0, int w, int h) {
-                buttonsList.setButtonsBgPadding(margin/8).setSize(w, h/4).setPos(x0, y0 + h, BOTTOM | LEFT);
+                buttonsList.setButtonsBgPadding(margin/8).setSize(w, ButtonCol.H_AUTO).setPos(x0, y0 + h, BOTTOM | LEFT);
                 int logoSide = Math.min(w, h - buttonsList.getHeight());
                 logo.setSize(logoSide, logoSide).setPos(x0 + w/2, (buttonsList.getTopY() + y0) / 2, HCENTER | VCENTER);
             }
