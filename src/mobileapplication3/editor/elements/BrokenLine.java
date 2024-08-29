@@ -110,6 +110,7 @@ public class BrokenLine extends Line {
                     thickness,
                     zoomOut,
                     drawThickness,
+                    true,
                     false,
                     true);
         }

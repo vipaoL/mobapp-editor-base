@@ -70,6 +70,7 @@ public class Accelerator extends Element {
                 thickness,
                 zoomOut,
                 drawThickness,
+				true,
                 false,
                 true);
         int vectorX = m * Mathh.cos(angle + 15 + directionOffset) / 1000;
