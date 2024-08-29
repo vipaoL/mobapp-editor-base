@@ -37,7 +37,7 @@ public class MainScreenUI extends Container {
     private ButtonRow bottomButtonPanel = null, zoomPanel = null;
     private ButtonPanelHorizontal placementButtonPanel = null;
     private ButtonCol placedElementsList = null;
-    private ButtonComponent settingsButton = null;
+    private ButtonComponent menuButton = null;
     private PathPicker pathPicker = null;
     private StartPointWarning startPointWarning = null;
     private StructureBuilder elementsBuffer;
@@ -117,11 +117,11 @@ public class MainScreenUI extends Container {
 	}
     
     private void setComponents() {
-    	setComponents(new IUIComponent[]{editorCanvas, startPointWarning, zoomPanel, placementButtonPanel, settingsButton, placedElementsList, bottomButtonPanel, pathPicker});
+    	setComponents(new IUIComponent[]{editorCanvas, startPointWarning, zoomPanel, placementButtonPanel, menuButton, placedElementsList, bottomButtonPanel, pathPicker});
     }
     
-    private SettingsUI getSettingsUIObject() {
-        return new SettingsUI(this);
+    private Menu getMenuObject() {
+        return new Menu(this);
     }
     
     private ElementEditUI getElementEditScreenObject(Element element, StructureBuilder sb) {
@@ -325,9 +325,9 @@ public class MainScreenUI extends Container {
     }
     
     private void initSettingsButton() {
-    	settingsButton = new ButtonComponent(new Button("Settings" + (RootContainer.displayKbHints ? " (0)" : "")) {
+    	menuButton = new ButtonComponent(new Button("Menu" + (RootContainer.displayKbHints ? " (0)" : "")) {
             public void buttonPressed() {
-                showPopup(getSettingsUIObject());
+                showPopup(getMenuObject());
             }
         }) {
             public boolean handleKeyPressed(int keyCode, int count) {
@@ -393,7 +393,7 @@ public class MainScreenUI extends Container {
         editorCanvas.setVisible(!b);
         bottomButtonPanel.setVisible(!b);
         zoomPanel.setVisible(!b);
-        settingsButton.setVisible(!b);
+        menuButton.setVisible(!b);
         refreshFocusedComponents();
     }
 
@@ -410,7 +410,7 @@ public class MainScreenUI extends Container {
         placementButtonPanel
                 .setSizes(w, ButtonPanelHorizontal.H_AUTO, BTN_H)
                 .setPos(x0, y0 + h - bottomButtonPanel.h, BOTTOM | LEFT);
-        settingsButton
+        menuButton
                 .setSize(ButtonComponent.W_AUTO, ButtonComponent.H_AUTO)
                 .setPos(x0 + w, y0, TOP | RIGHT);
         placedElementsList
