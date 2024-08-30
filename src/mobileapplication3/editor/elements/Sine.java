@@ -351,7 +351,7 @@ public class Sine extends AbstractCurve {
             int y1 = yToPX(startPoint[1], zoomOut, offsetY);
             int x2 = xToPX(endPoint[0], zoomOut, offsetX);
             int y2 = yToPX(endPoint[1], zoomOut, offsetY);
-            g.drawLine(x1, y1, x2, y2, LINE_THICKNESS, zoomOut, drawThickness);
+            g.drawLine(xToPX(startPoint[0], zoomOut, offsetX), yToPX(startPoint[1], zoomOut, offsetY), xToPX(endPoint[0], zoomOut, offsetX), yToPX(endPoint[1], zoomOut, offsetY), LINE_THICKNESS, zoomOut, drawThickness, true, true, true);
             if (i % 2 == 0) {
 	            int dx = x2 - x1;
 	            int dy = y2 - y1;
