@@ -54,7 +54,7 @@ public class MainScreenUI extends Container {
     	initEditorCanvas();
 	}
     
-    public void init() {
+    public void init() { // TODO split
     	try {
             initBottomPanel();
             
