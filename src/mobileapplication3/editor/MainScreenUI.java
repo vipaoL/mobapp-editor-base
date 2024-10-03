@@ -139,9 +139,9 @@ public class MainScreenUI extends Container {
                 placementButtonPanel.toggleIsVisible();
                 placementButtonPanel.setFocused(placementButtonPanel.getIsVisible());
             }
-        };
+        }.setBindedKeyCode(Keys.SOFT_LEFT);
         
-        btnLoad = new Button("Open" + (RootContainer.displayKbHints ? " (8)" : "")) {
+        btnLoad = new Button("Open") {
             public void buttonPressed() {
                 pathPicker.pickFile(EditorSettings.getMgstructsFolderPath(), "Open " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
                     public void onComplete(final String path) {
@@ -166,9 +166,9 @@ public class MainScreenUI extends Container {
                 });
                 setIsPathPickerVisible(true);
             }
-        };
+        }.setBindedKeyCode(Keys.KEY_NUM8);
         
-        btnSave = new Button("Save" + (RootContainer.displayKbHints ? " (9)" : "")) {
+        btnSave = new Button("Save") {
             public void buttonPressed() {
                 pathPicker.pickFolder(EditorSettings.getMgstructsFolderPath(), "Save as " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
                     public void onComplete(final String path) {
@@ -199,7 +199,7 @@ public class MainScreenUI extends Container {
                 });
                 setIsPathPickerVisible(true);
             }
-        };
+        }.setBindedKeyCode(Keys.KEY_NUM9);
         
         btnList = new Button("Edit") {
             public void buttonPressed() {
@@ -207,34 +207,10 @@ public class MainScreenUI extends Container {
                 placedElementsList.toggleIsVisible();
                 placedElementsList.setFocused(placedElementsList.getIsVisible());
             }
-        };
+        }.setBindedKeyCode(Keys.SOFT_RIGHT);
         
         Button[] bottomButtons = {btnPlace, btnLoad, btnSave, btnList};
-        bottomButtonPanel = (ButtonRow) new ButtonRow(){
-        	public boolean canBeFocused() {
-        		return false;
-        	}
-        	
-            public boolean handleKeyPressed(int keyCode, int count) {
-                switch (keyCode) {
-                    case -6:
-                        btnPlace.invokePressed(false, false);
-                        break;
-                    case -7:
-                        btnList.invokePressed(false, false);
-                        break;
-                    case Keys.KEY_NUM8:
-                        btnLoad.invokePressed(false, false);
-                        break;
-                    case Keys.KEY_NUM9:
-                        btnSave.invokePressed(false, false);
-                        break;
-                    default:
-                        return false;
-                }
-                return true;
-            }
-        }.setButtons(bottomButtons).setButtonsBgColor(0x303030);
+        bottomButtonPanel = (ButtonRow) new ButtonRow().setButtons(bottomButtons).setButtonsBgColor(0x303030);
     }
     
     private void initStartPointWarning() {
@@ -242,35 +218,21 @@ public class MainScreenUI extends Container {
     }
     
     private void initZoomPanel() {
-        zoomIn = new Button("+" + (RootContainer.displayKbHints ? " (*)" : "")) {
+        zoomIn = new Button("+") {
             public void buttonPressed() {
                 editorCanvas.zoomIn();
             }
-        };
+        }.setBindedKeyCode(Keys.KEY_STAR);
         
-        zoomOut = new Button("-" + (RootContainer.displayKbHints ? " (#)" : "")) {
+        zoomOut = new Button("-") {
             public void buttonPressed() {
                 editorCanvas.zoomOut();
             }
-        };
+        }.setBindedKeyCode(Keys.KEY_POUND);
         
         Button[] zoomPanelButtons = {zoomIn, zoomOut};
-        zoomPanel = (ButtonRow) new ButtonRow(zoomPanelButtons){
-            public boolean handleKeyPressed(int keyCode, int count) {
-                switch (keyCode) {
-                    case Keys.KEY_STAR:
-                        zoomIn.invokePressed(false, false);
-                        break;
-                    case Keys.KEY_POUND:
-                        zoomOut.invokePressed(false, false);
-                        break;
-                    default:
-                        return false;
-                }
-                return true;
-            }
-            
-        }.setButtonsBgColor(0x000020);
+        zoomPanel = (ButtonRow) new ButtonRow(zoomPanelButtons)
+        		.setButtonsBgColor(0x000020);
     }
     
     private void initPlacementPanel() {
@@ -316,7 +278,14 @@ public class MainScreenUI extends Container {
             }
         };
         
-        Button[] placementButtons = {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel};
+        Button btnFinish = new Button("Level-\nFinish") {
+            public void buttonPressed() {
+                elementsBuffer.place(Element.LEVEL_FINISH, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+                placementButtonPanel.setVisible(false);
+            }
+        };
+        
+        Button[] placementButtons = {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnFinish};
         placementButtonPanel = new ButtonPanelHorizontal(placementButtons)
                 .setBtnsInRowCount(BTNS_IN_ROW);
         placementButtonPanel.setIsSelectionEnabled(true);
@@ -325,21 +294,11 @@ public class MainScreenUI extends Container {
     }
     
     private void initSettingsButton() {
-    	menuButton = new ButtonComponent(new Button("Menu" + (RootContainer.displayKbHints ? " (0)" : "")) {
+    	menuButton = new ButtonComponent(new Button("Menu") {
             public void buttonPressed() {
                 showPopup(getMenuObject());
             }
-        }) {
-            public boolean handleKeyPressed(int keyCode, int count) {
-                switch (keyCode) {
-                    case Keys.KEY_NUM0:
-                        buttons[0].invokePressed(false, false);
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-        };
+        }).setBindedKeyCode(Keys.KEY_NUM0);
     }
 
     private void initListPanel() {
@@ -441,22 +400,6 @@ public class MainScreenUI extends Container {
     }
     
     public boolean keyPressed(int keyCode, int count) {
-    	if (!RootContainer.displayKbHints && !isPopupShown()) {
-    		RootContainer.displayKbHints = true;
-	        
-            initBottomPanel();
-            
-            initStartPointWarning();
-
-            initZoomPanel();
-
-            initSettingsButton();
-
-            initPathPicker();
-            
-            setComponents();
-    	}
-    	repaint();
     	return super.keyPressed(keyCode, count);
     }
     
@@ -473,22 +416,12 @@ public class MainScreenUI extends Container {
     		message = new TextComponent("Warn: start point of the structure should be on (x,y) 0 0");
     		message.setBgColor(COLOR_TRANSPARENT);
     		message.setFontColor(0xffff00);
-    		Button button = new Button("Move to 0 0" + (RootContainer.displayKbHints ? " (7)" : "")) {
+    		Button button = new Button("Move to 0 0") {
 				public void buttonPressed() {
 					moveToZeros();
 				}
 			}.setBgColor(0x002200);
-    		this.button = new ButtonComponent(button) {
-    			public boolean handleKeyPressed(int keyCode, int count) {
-    	            switch (keyCode) {
-    	                case Keys.KEY_NUM7:
-    	                    buttons[0].invokePressed(false, false);
-    	                    return true;
-    	                default:
-    	                    return false;
-    	            }
-    	        }
-    		};
+    		this.button = new ButtonComponent(button).setBindedKeyCode(Keys.KEY_NUM7);
 		}
     	
     	public void init() {
