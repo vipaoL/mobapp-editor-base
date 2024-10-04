@@ -51,11 +51,10 @@ public class MainScreenUI extends Container {
                 saveToRMS();
             }
         });
-    	initEditorCanvas();
-	}
-    
-    public void init() { // TODO split
+
     	try {
+    		initEditorCanvas();
+
             initBottomPanel();
             
             initStartPointWarning();
@@ -74,8 +73,13 @@ public class MainScreenUI extends Container {
             ex.printStackTrace();
             Platform.showError(ex);
         }
-    	isAutoSaveEnabled = EditorSettings.getAutoSaveEnabled(true);
+
     	setComponents();
+	}
+    
+    public void init() {
+    	isAutoSaveEnabled = EditorSettings.getAutoSaveEnabled(true);
+    	super.init();
     }
     
     private void checkAutoSaveStorage() {
