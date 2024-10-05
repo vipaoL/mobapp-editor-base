@@ -5,14 +5,12 @@
  */
 package mobileapplication3.editor;
 
-import mobileapplication3.editor.setup.SetupWizard;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.ui.AbstractPopupWindow;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.IUIComponent;
-import mobileapplication3.ui.Switch;
 
 /**
  *
@@ -39,7 +37,7 @@ public class Menu extends AbstractPopupWindow {
     }
 
     protected IUIComponent initAndGetPageContent() {
-        Menu inst = this;
+        final Menu inst = this;
         Button[] settingsButtons = new Button[]{
             new Button("Settings") {
                 public void buttonPressed() {

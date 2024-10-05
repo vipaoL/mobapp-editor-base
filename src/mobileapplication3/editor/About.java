@@ -65,7 +65,7 @@ public class About extends AbstractPopupWindow {
         }
 
 
-        UIComponent logo;
+        final UIComponent logo;
         if (logoImage != null) {
             logo = new ImageComponent(logoImage);
             logo.setBgColor(COLOR_ACCENT_MUTED);
@@ -87,20 +87,18 @@ public class About extends AbstractPopupWindow {
             }.setBgColor(COLOR_ACCENT)
         };
         
-        ButtonCol buttonsList = (ButtonCol) new ButtonCol()
+        final ButtonCol buttonsList = (ButtonCol) new ButtonCol()
                 .enableScrolling(true, true)
                 .enableAnimations(false)
                 .trimHeight(true)
                 .setButtons(settingsButtons);
         
         Container container = new Container() {
-            @Override
             public void init() {
                 setComponents(new IUIComponent[] {logo, buttonsList});
                 setBgColor(COLOR_TRANSPARENT);
             }
 
-            @Override
             protected void onSetBounds(int x0, int y0, int w, int h) {
                 buttonsList.setButtonsBgPadding(margin/8).setSize(w, ButtonCol.H_AUTO).setPos(x0, y0 + h, BOTTOM | LEFT);
                 int logoSide = Math.min(w, h - buttonsList.getHeight());
