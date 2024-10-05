@@ -143,7 +143,7 @@ public class MainScreenUI extends Container {
                 placementButtonPanel.toggleIsVisible();
                 placementButtonPanel.setFocused(placementButtonPanel.getIsVisible());
             }
-        }.setBindedKeyCode(Keys.SOFT_LEFT);
+        };
         
         btnLoad = new Button("Open") {
             public void buttonPressed() {
@@ -211,10 +211,10 @@ public class MainScreenUI extends Container {
                 placedElementsList.toggleIsVisible();
                 placedElementsList.setFocused(placedElementsList.getIsVisible());
             }
-        }.setBindedKeyCode(Keys.SOFT_RIGHT);
+        };
         
         Button[] bottomButtons = {btnPlace, btnLoad, btnSave, btnList};
-        bottomButtonPanel = (ButtonRow) new ButtonRow().setButtons(bottomButtons).setButtonsBgColor(0x303030);
+        bottomButtonPanel = (ButtonRow) new ButtonRow().bindToSoftButtons(0, 3).setButtons(bottomButtons).setButtonsBgColor(0x303030);
     }
     
     private void initStartPointWarning() {
