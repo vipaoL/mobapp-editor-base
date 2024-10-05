@@ -138,7 +138,6 @@ public class EditorCanvas extends UIComponent {
     }
 
     public boolean handleKeyPressed(int keyCode, int count) {
-        System.out.println("count=" + count);
         count = Math.max(count - 4, 1);
         if (count > 10) {
             count = 10;
