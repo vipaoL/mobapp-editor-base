@@ -23,9 +23,10 @@ public abstract class Element {
     public static final short SINE = 6;
     public static final short ACCELERATOR = 7;
     public static final short TRAMPOLINE = 8;
+    public static final short LEVEL_FINISH = 9;
     
-    public static final int[] ARGS_NUMBER = {0, /*1*/2, /*2*/4, /*3*/7, /*4*/9, /*5*/10, /*6*/5, /*7*/8, /*7         */8};
-    public static final int[] stepsToPlace = {0, /*1*/1, /*2*/2, /*3*/2, /*4*/2, /*5*/2, /*6*/3, /*7*/2, /*8*/2};
+    public static final int[] ARGS_NUMBER = {0, /*1*/2, /*2*/4, /*3*/7, /*4*/9, /*5*/10, /*6*/5, /*7*/8, /*8*/8, /*9*/8};
+    public static final int[] stepsToPlace = {0, /*1*/1, /*2*/2, /*3*/2, /*4*/2, /*5*/2, /*6*/3, /*7*/2, /*8*/2, /*9*/2};
     
     public static final int LINE_THICKNESS = 24;
     
@@ -59,6 +60,8 @@ public abstract class Element {
                 return new Sine();
             case Element.ACCELERATOR:
                 return new Accelerator();
+            case Element.LEVEL_FINISH:
+            	return new LevelFinish();
             default:
                 System.out.println("Unknown id: " + id);
                 return null;
