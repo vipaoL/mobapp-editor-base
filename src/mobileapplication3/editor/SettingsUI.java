@@ -6,7 +6,8 @@
 package mobileapplication3.editor;
 
 import mobileapplication3.editor.setup.SetupWizard;
-import mobileapplication3.ui.AbstractPopupWindow;
+import mobileapplication3.ui.AbstractPopupPage;
+import mobileapplication3.ui.BackButton;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.IPopupFeedback;
@@ -17,7 +18,7 @@ import mobileapplication3.ui.Switch;
  *
  * @author vipaol
  */
-public class SettingsUI extends AbstractPopupWindow {
+public class SettingsUI extends AbstractPopupPage {
 
     public SettingsUI(IPopupFeedback parent) {
         super("Settings", parent);
@@ -25,21 +26,13 @@ public class SettingsUI extends AbstractPopupWindow {
 
     protected Button[] getActionButtons() {
         return new Button[] {
-            new Button("OK") {
-                public void buttonPressed() {
-                    close();
-                }
-            }
+            new BackButton(feedback)
         };
-    }
-    
-    public void init() {
-    	super.init();
     }
 
     protected IUIComponent initAndGetPageContent() {
         Button[] settingsButtons = new Button[]{
-    		new Button("Current MGStructs folder: " + EditorSettings.getMgstructsFolderPath()) {
+    		new Button("Current game folder: " + EditorSettings.getGameFolderPath()) {
                 public void buttonPressed() { }
             }.setIsActive(false),//.setBgColorInactive(0x223322).setFontColorInactive(0xaaaaaa),
             new Switch("Animations") {
@@ -52,6 +45,16 @@ public class SettingsUI extends AbstractPopupWindow {
 					getUISettings().onChange();
 				}
             },
+            new Switch("Transparent background of popups") {
+                public boolean getValue() {
+                    return EditorSettings.getTransparencyEnabled(true);
+                }
+
+                public void setValue(boolean value) {
+                    EditorSettings.setTransparencyEnabled(value);
+                    getUISettings().onChange();
+                }
+            },
             new Switch("Key repeats in lists") {
 				public boolean getValue() {
 					return EditorSettings.getKeyRepeatedInListsEnabled(false);
@@ -62,13 +65,23 @@ public class SettingsUI extends AbstractPopupWindow {
 					getUISettings().onChange();
 				}
             },
-            new Switch("Auto-save to RMS") {
+            new Switch("Auto-save") {
             	public boolean getValue() {
 					return EditorSettings.getAutoSaveEnabled(true);
 				}
 
 				public void setValue(boolean value) {
 					EditorSettings.setAutoSaveEnabled(value);
+					getUISettings().onChange();
+				}
+            },
+            new Switch("Show log") {
+            	public boolean getValue() {
+					return EditorSettings.getOnScreenLogEnabled();
+				}
+
+				public void setValue(boolean value) {
+					EditorSettings.setOnScreenLogEnabled(value);
 					getUISettings().onChange();
 				}
             },
@@ -95,7 +108,7 @@ public class SettingsUI extends AbstractPopupWindow {
         ButtonCol settingsList = (ButtonCol) new ButtonCol()
                 .enableScrolling(true, false)
                 .enableAnimations(false)
-                .trimHeight(true)
+                .trimHeight(false)
                 .setButtons(settingsButtons);
         
         return settingsList;

@@ -6,6 +6,7 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
+import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -174,9 +175,9 @@ public class Sine extends AbstractCurve {
         return new short[]{x0, y0, l, halfperiods, (short) Mathh.normalizeAngle(-offset), amp};
     }
     
-    public Argument[] getArgs() {
-    	return new Argument[] {
-    			new Argument("X0") {
+    public Property[] getArgs() {
+    	return new Property[] {
+    			new Property("X0") {
 					public void setValue(short value) {
 						if (x0 != value) {
 							pointsCache = null;
@@ -189,7 +190,7 @@ public class Sine extends AbstractCurve {
 						return x0;
 					}
     			},
-    			new Argument("Y0") {
+    			new Property("Y0") {
 					public void setValue(short value) {
 						if (y0 != value) {
 							pointsCache = null;
@@ -201,7 +202,7 @@ public class Sine extends AbstractCurve {
 						return y0;
 					}
     			},
-    			new Argument("Length") {
+    			new Property("Length") {
 					public void setValue(short value) {
 						setLength(value);
 					}
@@ -218,7 +219,7 @@ public class Sine extends AbstractCurve {
 						return (short) (Short.MAX_VALUE - x0);
 					}
     			},
-    			new Argument("Halfperiods") {
+    			new Property("Halfperiods") {
 					public void setValue(short value) {
 						setHalfperiodsNumber(value);
 					}
@@ -235,7 +236,7 @@ public class Sine extends AbstractCurve {
 						return (short) (l / 64);
 					}
     			},
-    			new Argument("Phase shift") {
+    			new Property("Phase shift") {
 					public void setValue(short value) {
 						setOffset(value);
 					}
@@ -252,7 +253,7 @@ public class Sine extends AbstractCurve {
 						return 0;
 					}
     			},
-    			new Argument("Amplitude") {
+    			new Property("Amplitude") {
 					public void setValue(short value) {
 						setAmplitude(value);
 					}

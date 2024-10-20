@@ -5,6 +5,7 @@
  */
 package mobileapplication3.editor.elements;
 
+import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -94,9 +95,9 @@ public class Line extends Element {
         return args;
     }
     
-    public Argument[] getArgs() {
-    	return new Argument[] {
-    			new Argument("X1") {
+    public Property[] getArgs() {
+    	return new Property[] {
+    			new Property("X1") {
 					public void setValue(short value) {
 						x1 = value;
 					}
@@ -105,7 +106,7 @@ public class Line extends Element {
 						return x1;
 					}
     			},
-    			new Argument("Y1") {
+    			new Property("Y1") {
 					public void setValue(short value) {
 						y1 = value;
 					}
@@ -114,7 +115,7 @@ public class Line extends Element {
 						return y1;
 					}
     			},
-    			new Argument("X2") {
+    			new Property("X2") {
 					public void setValue(short value) {
 						x2 = value;
 					}
@@ -123,7 +124,7 @@ public class Line extends Element {
 						return x2;
 					}
     			},
-    			new Argument("Y2") {
+    			new Property("Y2") {
 					public void setValue(short value) {
 						y2 = value;
 					}

@@ -10,7 +10,6 @@ import mobileapplication3.editor.elements.StartPoint;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Font;
 import mobileapplication3.platform.ui.Graphics;
-import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.AbstractButtonSet;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
@@ -26,13 +25,14 @@ import mobileapplication3.ui.TextComponent;
  *
  * @author vipaol
  */
-public class MainScreenUI extends Container {
+public class EditorUI extends Container {
     
     private final static int BTNS_IN_ROW = 4;
     public final static int FONT_H = Font.getDefaultFontHeight();
     public final static int BTN_H = FONT_H*2;
+    public final static int MODE_STRUCTURE = 1, MODE_LEVEL = 2;
 
-    private Button btnLoad, btnSave, btnPlace, btnList, zoomIn, zoomOut;;
+    private Button btnLoad, btnSave, btnPlace, btnList, zoomIn, zoomOut;
     private EditorCanvas editorCanvas = null;
     private ButtonRow bottomButtonPanel = null, zoomPanel = null;
     private ButtonPanelHorizontal placementButtonPanel = null;
@@ -41,16 +41,18 @@ public class MainScreenUI extends Container {
     private PathPicker pathPicker = null;
     private StartPointWarning startPointWarning = null;
     private StructureBuilder elementsBuffer;
-    private boolean postInitDone = false;
     private boolean isAutoSaveEnabled = true;
     
-    public MainScreenUI() {
-    	elementsBuffer = new StructureBuilder(new StructureBuilder.Feedback() {
+    private int mode;
+    
+    public EditorUI(int editorMode) {
+    	mode = editorMode;
+    	elementsBuffer = new StructureBuilder(mode) {
             public void onUpdate() {
                 initListPanel();
                 saveToRMS();
             }
-        });
+        };
 
     	try {
     		initEditorCanvas();
@@ -77,32 +79,22 @@ public class MainScreenUI extends Container {
     	setComponents();
 	}
     
+    public EditorUI(int editorMode, Element[] elements, String path) {
+		this(editorMode);
+		elementsBuffer.setElements(elements);
+	}
+
     public void init() {
     	isAutoSaveEnabled = EditorSettings.getAutoSaveEnabled(true);
     	super.init();
     }
-    
-    private void checkAutoSaveStorage() {
-    	if (!isAutoSaveEnabled) {
-    		return;
-    	}
 
-        try {
-        	final Element[] elements = AutoSave.autoSaveRead();
-            if (elements != null && elements.length > 2) {
-                showPopup(new AutoSave(this, elements) {
-        			public void onRestore() {
-        				elementsBuffer.setElements(elements);
-        				close();
-        			};
-        			
-        			public void onDelete() {
-                        AutoSave.deleteAutoSave();
-        				close();
-        			};
-        		});
-        	}
-        } catch (Exception ignored) { }
+    public short[][] getData() {
+        return elementsBuffer.asShortArrays();
+    }
+
+    public int getMode() {
+        return mode;
     }
     
     private void saveToRMS() {
@@ -110,7 +102,7 @@ public class MainScreenUI extends Container {
     		new Thread(new Runnable() {
 				public void run() {
 					try {
-						AutoSave.autoSaveWrite(elementsBuffer);
+						AutoSave.autoSaveWrite(elementsBuffer, mode);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 						Platform.showError(ex);
@@ -124,8 +116,8 @@ public class MainScreenUI extends Container {
     	setComponents(new IUIComponent[]{editorCanvas, startPointWarning, zoomPanel, placementButtonPanel, menuButton, placedElementsList, bottomButtonPanel, pathPicker});
     }
     
-    private Menu getMenuObject() {
-        return new Menu(this);
+    private EditorQuickMenu getMenuObject() {
+        return new EditorQuickMenu(this);
     }
     
     private ElementEditUI getElementEditScreenObject(Element element, StructureBuilder sb) {
@@ -147,7 +139,7 @@ public class MainScreenUI extends Container {
         
         btnLoad = new Button("Open") {
             public void buttonPressed() {
-                pathPicker.pickFile(EditorSettings.getMgstructsFolderPath(), "Open " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
+                pathPicker.pickFile(EditorSettings.getStructsFolderPath(), "Open " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
                     public void onComplete(final String path) {
                         (new Thread(new Runnable() {
                             public void run() {
@@ -163,10 +155,6 @@ public class MainScreenUI extends Container {
                     public void onCancel() {
                         setIsPathPickerVisible(false);
                     }
-
-                    public void needRepaint() {
-                        repaint();
-                    }
                 });
                 setIsPathPickerVisible(true);
             }
@@ -174,7 +162,13 @@ public class MainScreenUI extends Container {
         
         btnSave = new Button("Save") {
             public void buttonPressed() {
-                pathPicker.pickFolder(EditorSettings.getMgstructsFolderPath(), "Save as " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
+            	String path;
+            	if (mode == MODE_STRUCTURE) {
+            		path = EditorSettings.getStructsFolderPath();
+            	} else {
+            		path = EditorSettings.getLevelsFolderPath();
+            	}
+                pathPicker.pickFolder(path, "Save as " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
                     public void onComplete(final String path) {
                         (new Thread(new Runnable() {
                             public void run() {
@@ -183,7 +177,7 @@ public class MainScreenUI extends Container {
                                     elementsBuffer.saveToFile(path);
                                     System.out.println("Saved!");
                                     setIsPathPickerVisible(false);
-                                    AutoSave.deleteAutoSave();
+                                    AutoSave.deleteAutoSave(mode);
                                 } catch (Exception ex) {
                                     ex.printStackTrace();
                                     Platform.showError(ex);
@@ -191,10 +185,6 @@ public class MainScreenUI extends Container {
                                 repaint();
                             }
                         })).start();
-                    }
-
-                    public void needRepaint() {
-                        repaint();
                     }
 
                     public void onCancel() {
@@ -218,7 +208,9 @@ public class MainScreenUI extends Container {
     }
     
     private void initStartPointWarning() {
-    	startPointWarning = (StartPointWarning) new StartPointWarning().setVisible(false);
+    	if (mode == MODE_STRUCTURE) {
+    		startPointWarning = (StartPointWarning) new StartPointWarning().setVisible(false);
+    	}
     }
     
     private void initZoomPanel() {
@@ -289,12 +281,16 @@ public class MainScreenUI extends Container {
             }
         };
         
-        Button[] placementButtons = {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnFinish};
+        Button[] placementButtons;
+        if (mode == MODE_STRUCTURE) {
+        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel};
+        } else {
+        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnFinish};
+        }
         placementButtonPanel = new ButtonPanelHorizontal(placementButtons)
                 .setBtnsInRowCount(BTNS_IN_ROW);
         placementButtonPanel.setIsSelectionEnabled(true);
         placementButtonPanel.setVisible(false);
-        placementButtonPanel.setIsSelectionVisible(RootContainer.displayKbHints);
     }
     
     private void initSettingsButton() {
@@ -382,18 +378,11 @@ public class MainScreenUI extends Container {
         pathPicker
                 .setSizes(w, h, BTN_H)
                 .setPos(x0, y0);
-        startPointWarning
-        		.setSize(startPointWarning.getOptimalW(zoomPanel.getLeftX() - x0), startPointWarning.getOptimalH(bottomButtonPanel.getTopY() - y0))
-        		.setPos(bottomButtonPanel.getLeftX(), bottomButtonPanel.getTopY(), LEFT | BOTTOM);
-        
-        if (!postInitDone) {
-        	onPostInit();
+        if (startPointWarning != null) {
+        	startPointWarning
+	        		.setSize(startPointWarning.getOptimalW(zoomPanel.getLeftX() - x0), startPointWarning.getOptimalH(bottomButtonPanel.getTopY() - y0))
+	        		.setPos(bottomButtonPanel.getLeftX(), bottomButtonPanel.getTopY(), LEFT | BOTTOM);
         }
-    }
-    
-    private void onPostInit() {
-    	checkAutoSaveStorage();
-    	postInitDone = true;
     }
     
     public void paint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
@@ -410,7 +399,7 @@ public class MainScreenUI extends Container {
     public void moveToZeros() {
     	StartPoint.moveToZeros(elementsBuffer.getElementsAsArray());
     }
-    
+
     class StartPointWarning extends Container {
     	TextComponent message;
     	ButtonComponent button;

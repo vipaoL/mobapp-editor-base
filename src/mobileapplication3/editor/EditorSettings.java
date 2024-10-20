@@ -15,13 +15,22 @@ public class EditorSettings {
     public static final String
     		RECORD_STORE_SETTINGS = "settings",
 
-            IS_SETUP_WIZARD_COMPLETED = "wizardCompleted",
-            MGSTRUCTS_FOLDER_PATH = "mgPath",
+            IS_SETUP_WIZARD_COMPLETED = "setupDone",
+            GAME_FOLDER_PATH = "MGPath",
             ANIMS = "anims",
+            TRANSPARENCY = "trnspcy",
             LISTS_KEY_REPEATS = "listKRepeats",
-            AUTO_SAVE = "autoSave";
+            AUTO_SAVE = "autoSave",
+            WHAT_TO_LOAD_AUTOMATICALLY = "alwLoad",
+    		SHOW_LOG = "showLog";
+
+    public static final int
+            OPTION_ALWAYS_LOAD_NONE = 0,
+            OPTION_ALWAYS_LOAD_LIST = 1,
+            OPTION_ALWAYS_LOAD_THUMBNAILS = 2;
     
-    private static String mgstructsFolderPath = null;
+    private static String gameFolderPath = null;
+    private static int whatToLoadAutomatically = -1;
     
     private static Settings settingsInst = null;
     
@@ -33,14 +42,48 @@ public class EditorSettings {
     	if (settingsInst == null) {
     		settingsInst = new Settings(new String[]{
     	            IS_SETUP_WIZARD_COMPLETED,
-    	            MGSTRUCTS_FOLDER_PATH,
+    	            GAME_FOLDER_PATH,
     	            ANIMS,
+                    TRANSPARENCY,
     	            LISTS_KEY_REPEATS,
-    	            AUTO_SAVE
+    	            AUTO_SAVE,
+                    WHAT_TO_LOAD_AUTOMATICALLY,
+                    SHOW_LOG
     	        }, RECORD_STORE_SETTINGS);
     	}
     	return settingsInst;
     }
+
+    ///
+    
+    public static boolean getOnScreenLogEnabled() {
+        return getSettingsInst().getBool(SHOW_LOG);
+    }
+    
+    public static boolean getOnScreenLogEnabled(boolean defaultValue) {
+        return getSettingsInst().getBool(SHOW_LOG, defaultValue);
+    }
+    
+    public static void setOnScreenLogEnabled(boolean b) {
+    	getSettingsInst().set(SHOW_LOG, b);
+    }
+    
+    ///
+
+    public static int getWhatToLoadAutomatically() {
+        if (whatToLoadAutomatically < 0) {
+            whatToLoadAutomatically = getSettingsInst().getInt(WHAT_TO_LOAD_AUTOMATICALLY, OPTION_ALWAYS_LOAD_NONE);
+        }
+
+        return whatToLoadAutomatically;
+    }
+
+    public static void setWhatToLoadAutomatically(int option) {
+        getSettingsInst().set(WHAT_TO_LOAD_AUTOMATICALLY, String.valueOf(option));
+        whatToLoadAutomatically = option;
+    }
+
+    ///
     
     public static boolean getAutoSaveEnabled() {
         return getSettingsInst().getBool(AUTO_SAVE);
@@ -75,38 +118,73 @@ public class EditorSettings {
     public static boolean toggleKeyRepeatedInListsEnabled() {
     	return getSettingsInst().toggleBool(LISTS_KEY_REPEATS);
     }
+
+    ///
+
+    public static boolean getTransparencyEnabled() {
+        return getSettingsInst().getBool(TRANSPARENCY);
+    }
+
+    public static boolean getTransparencyEnabled(boolean defaultValue) {
+        return getSettingsInst().getBool(TRANSPARENCY, defaultValue);
+    }
+
+    public static void setTransparencyEnabled(boolean b) {
+        getSettingsInst().set(TRANSPARENCY, b);
+    }
+
+    public static boolean toggleTransparency() {
+        return getSettingsInst().toggleBool(TRANSPARENCY);
+    }
     
     ///
-    
+
     public static boolean getAnimsEnabled() {
         return getSettingsInst().getBool(ANIMS);
     }
-    
+
     public static boolean getAnimsEnabled(boolean defaultValue) {
         return getSettingsInst().getBool(ANIMS, defaultValue);
     }
-    
+
     public static void setAnimsEnabled(boolean b) {
     	getSettingsInst().set(ANIMS, b);
     }
-    
+
     public static boolean toggleAnims() {
     	return getSettingsInst().toggleBool(ANIMS);
     }
     
-    ///
+///
     
-    public static String getMgstructsFolderPath() {
-        if (mgstructsFolderPath == null) {
-            mgstructsFolderPath = getSettingsInst().getStr(MGSTRUCTS_FOLDER_PATH);
+    public static String getLevelsFolderPath() {
+    	return getLevelsFolderPath(EditorSettings.getGameFolderPath());
+    }
+    
+    public static String getLevelsFolderPath(String gameFolderPath) {
+    	return gameFolderPath + "Levels/";
+    }
+    // getMgstructsFolderPath 
+    // getStructsFolderPath
+    public static String getStructsFolderPath() {
+    	return getStructsFolderPath(EditorSettings.getGameFolderPath());
+    }
+    
+    public static String getStructsFolderPath(String gameFolderPath) {
+    	return gameFolderPath + "MGStructs/";
+    }
+    
+    public static String getGameFolderPath() {
+        if (gameFolderPath == null) {
+            gameFolderPath = getSettingsInst().getStr(GAME_FOLDER_PATH);
         }
         
-        return mgstructsFolderPath;
+        return gameFolderPath;
     }
 
-    public static void setMgstructsFolderPath(String path) {
-    	getSettingsInst().set(MGSTRUCTS_FOLDER_PATH, path);
-    	mgstructsFolderPath = path;
+    public static void setGameFolderPath(String path) {
+    	getSettingsInst().set(GAME_FOLDER_PATH, path);
+    	gameFolderPath = path;
     }
     
     ///

@@ -2,13 +2,17 @@ package mobileapplication3.editor;
 
 import mobileapplication3.editor.elements.Element;
 import mobileapplication3.platform.Platform;
-import mobileapplication3.ui.AbstractPopupWindow;
+import mobileapplication3.ui.AbstractPopupPage;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.IUIComponent;
 
-public abstract class AutoSave extends AbstractPopupWindow {
-	private final static String STORE_NAME_AUTOSAVE = "AutoSave";
+public abstract class AutoSave extends AbstractPopupPage {
+	private final static String STORE_NAME_STRUCTURE_AUTOSAVE = "StructureAutoSave";
+	private final static String STORE_NAME_LEVEL_AUTOSAVE = "LevelAutoSave";
+
+	public final static int STRUCTURE = EditorUI.MODE_STRUCTURE;
+	public final static int LEVEL = EditorUI.MODE_LEVEL;
 
 	private Element[] elements;
 
@@ -45,16 +49,37 @@ public abstract class AutoSave extends AbstractPopupWindow {
 	public abstract void onRestore();
 	public abstract void onDelete();
 	
-	public static void autoSaveWrite(StructureBuilder data) throws Exception {
-		Platform.storeShorts(data.asShortArray(), STORE_NAME_AUTOSAVE);
+	public static void autoSaveWrite(StructureBuilder data, int autoSaveID) throws Exception {
+		switch (autoSaveID) {
+			case STRUCTURE:
+				Platform.storeShorts(data.asShortArray(), STORE_NAME_STRUCTURE_AUTOSAVE);
+				break;
+			case LEVEL:
+				Platform.storeShorts(data.asShortArray(), STORE_NAME_LEVEL_AUTOSAVE);
+				break;
+		}
 	}
 
-	public static Element[] autoSaveRead() {
-		return MGStructs.readMGStruct(Platform.readStore(STORE_NAME_AUTOSAVE));
+	public static Element[] autoSaveRead(int autoSaveID) {
+        switch (autoSaveID) {
+            case STRUCTURE:
+                return MGStructs.readMGStruct(Platform.readStore(STORE_NAME_STRUCTURE_AUTOSAVE));
+			case LEVEL:
+                return MGStructs.readMGStruct(Platform.readStore(STORE_NAME_LEVEL_AUTOSAVE));
+			default:
+				return null;
+        }
 	}
 
-	public static void deleteAutoSave() {
-		Platform.clearStore(STORE_NAME_AUTOSAVE);
+	public static void deleteAutoSave(int autoSaveID) {
+        switch (autoSaveID) {
+            case STRUCTURE:
+                Platform.clearStore(STORE_NAME_STRUCTURE_AUTOSAVE);
+                break;
+			case LEVEL:
+                Platform.clearStore(STORE_NAME_LEVEL_AUTOSAVE);
+                break;
+        }
 	}
 
 }

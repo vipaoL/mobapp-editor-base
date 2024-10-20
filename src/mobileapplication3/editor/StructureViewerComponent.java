@@ -1,38 +1,42 @@
 package mobileapplication3.editor;
 
 import mobileapplication3.editor.elements.Element;
+import mobileapplication3.editor.elements.EndPoint;
 import mobileapplication3.editor.elements.StartPoint;
 import mobileapplication3.platform.Mathh;
 import mobileapplication3.platform.ui.Graphics;
 import mobileapplication3.ui.UIComponent;
 
-public class StructureViewerComponent extends UIComponent { // TODO: merge with EditorCanvas
+public class StructureViewerComponent extends UIComponent {
 	
-	private static final int MIN_ZOOM_OUT = 8;
-	private static final int MAX_ZOOM_OUT = 200000;
+	protected static final int MIN_ZOOM_OUT = 8, MAX_ZOOM_OUT = 200000;
 	
-	private int colLandscape = 0x4444ff;
-    private int colBody = 0xffffff;
-    private int offsetX, offsetY;
-	private int zoomOut = 8192;
-	short start;
-	short end;
+	protected int colLandscape = 0x4444ff, colBody = 0xffffff;
+    protected int offsetX, offsetY, zoomOut = 8192;
+	protected short start, end;
 	
-	private Element[] elements;
+	protected Element[] elements = new Element[0];
+	
+	public StructureViewerComponent() {
+		setBgColor(COLOR_ACCENT_MUTED);
+	}
 	
 	public StructureViewerComponent(Element[] elements) {
+		this();
+		setElements(elements);
+	}
+	
+	public void setElements(Element[] elements) {
 		this.elements = elements;
 		start = StartPoint.findStartPoint(elements)[0];
-		end = elements[0].getArgsValues()[0];
-		setBgColor(COLOR_ACCENT_MUTED);
-		System.out.println("structure viewer: got " + elements.length + "elements");
+		end = EndPoint.findEndPoint(elements)[0];
 	}
 
 	public boolean canBeFocused() {
 		return false;
 	}
 
-	protected boolean handlePointerReleased(int x, int y) {
+	protected boolean handlePointerClicked(int x, int y) {
 		return false;
 	}
 
@@ -42,13 +46,13 @@ public class StructureViewerComponent extends UIComponent { // TODO: merge with 
 
 	protected void onPaint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
 		try {
-			drawElements(g, x0, y0, w, h, elements);
+			drawElements(g, x0, y0, elements);
 		} catch (Exception ex) {
 			g.drawString(ex.toString(), x0, y0, TOP | LEFT);
 		}
 	}
 	
-	private void drawElements(Graphics g, int x0, int y0, int w, int h, Element[] elements) {
+	protected void drawElements(Graphics g, int x0, int y0, Element[] elements) {
         for (int i = 0; i < elements.length; i++) {
         	try {
 	        	Element element = elements[i];

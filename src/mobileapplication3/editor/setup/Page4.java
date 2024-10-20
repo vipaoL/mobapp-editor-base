@@ -9,7 +9,7 @@ import mobileapplication3.editor.EditorSettings;
 import mobileapplication3.platform.FileUtils;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Graphics;
-import mobileapplication3.ui.AbstractPopupWindow;
+import mobileapplication3.ui.AbstractPopupPage;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.IPopupFeedback;
@@ -66,7 +66,7 @@ public class Page4 extends AbstractSetupWizardPage {
     private void fillList() {
         (new Thread(new Runnable() {
             public void run() {
-                String[] folders = FileUtils.getAllPlaces("MGStructs"); // TODO make constant
+                String[] folders = FileUtils.getAllPlaces("MobappGame"); // TODO make constant
                 listButtons = new Button[folders.length];
                 for (int i = 0; i < folders.length; i++) {
                     listButtons[i] = new Button(folders[i]) {
@@ -89,18 +89,30 @@ public class Page4 extends AbstractSetupWizardPage {
     private void saveFolderChoise(final String path) {
         showPopup(new LoadingPopup("Checking folder...", this));
         (new Thread(new Runnable() {
+        	String subFolderPath;
             public void run() {
+            	subFolderPath = null;
                 try {
-                    FileUtils.createFolder(path);
-                } catch (Exception ex) {
+                	subFolderPath = EditorSettings.getStructsFolderPath(path);
+                    FileUtils.createFolder(subFolderPath);
+                } catch (Throwable ex) {
                     closePopup();
-                    Platform.showError("Can't create folder: " + ex.toString());
+                    Platform.showError("Can't create folder " + subFolderPath + ": " + ex.toString());
+                    ex.printStackTrace();
+                }
+                subFolderPath = null;
+                try {
+                	subFolderPath = EditorSettings.getLevelsFolderPath(path);
+                    FileUtils.createFolder(subFolderPath);
+                } catch (Throwable ex) {
+                    closePopup();
+                    Platform.showError("Can't create folder " + subFolderPath + ": " + ex.toString());
                     ex.printStackTrace();
                 }
                 
                 try {
                     FileUtils.checkFolder(path);
-                    EditorSettings.setMgstructsFolderPath(path);
+                    EditorSettings.setGameFolderPath(path);
                     feedback.nextPage();
                 } catch (Exception ex) {
                     closePopup();
@@ -128,7 +140,7 @@ public class Page4 extends AbstractSetupWizardPage {
     	list.setFocused(true);
     }
     
-    private class LoadingPopup extends AbstractPopupWindow {
+    private class LoadingPopup extends AbstractPopupPage {
         int animOffset = 100;
 
         public LoadingPopup(String title, IPopupFeedback parent) {
@@ -160,7 +172,7 @@ public class Page4 extends AbstractSetupWizardPage {
 
         protected IUIComponent initAndGetPageContent() {
             return new UIComponent() {
-                protected boolean handlePointerReleased(int x, int y) {
+                protected boolean handlePointerClicked(int x, int y) {
                     return false;
                 }
 

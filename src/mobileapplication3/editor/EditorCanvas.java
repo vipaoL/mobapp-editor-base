@@ -11,43 +11,45 @@ import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Graphics;
 import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.Keys;
-import mobileapplication3.ui.UIComponent;
 
 /**
  *
  * @author vipaol
  */
-public class EditorCanvas extends UIComponent {
-    
-    private static final int MIN_ZOOM_OUT = 8;
-	private static final int MAX_ZOOM_OUT = 200000;
+public class EditorCanvas extends StructureViewerComponent {
+	public static final int MODE_STRUCTURE = EditorUI.MODE_STRUCTURE, MODE_LEVEL = EditorUI.MODE_LEVEL;
+	
 	private static int zoomoutThresholdMacroMode = 200;
-    private StructureBuilder structurePlacer;
+    private StructureBuilder structureBuilder;
     private Car car = new Car();
     private int colBg = 0x000000;
-    private int colLandscape = 0x4444ff;
-    private int colBody = 0xffffff;
     private int colSelected = 0xaaffff;
     private int cursorX, cursorY = 0;
-    private int offsetX, offsetY;
-    private int zoomOut = 8192;
     private int keyRepeats = 0;
     public int selectedElement = 0;
+    private int editMode;
     
     PointerHandler pointerHandler = new PointerHandler();
 
-    public EditorCanvas(StructureBuilder structure) {
-        this.structurePlacer = structure;
+    public EditorCanvas(StructureBuilder structureBuilder) {
+    	super(structureBuilder.getElementsAsArray());
+        this.structureBuilder = structureBuilder;
+        editMode = structureBuilder.getMode();
     }
     
     public void onPaint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
-        drawElements(g, x0, y0);
-        drawStartPoint(g, x0, y0);
+    	if (editMode == MODE_STRUCTURE) {
+    		car.drawCar(g, x0, y0);
+    	}
+        setElements(structureBuilder.getElementsAsArray());
+        super.onPaint(g, x0, y0, w, h, forceInactive);
+        if (editMode == MODE_STRUCTURE) {
+        	drawStartPoint(g, x0, y0);
+        }
         drawCursor(g, x0, y0);
-        car.drawCar(g, x0, y0);
-        if (structurePlacer.placingNow != null) {
+        if (structureBuilder.placingNow != null) {
             g.setColor(0xaaffaa);
-            g.drawString(structurePlacer.getPlacingInfo(), 0, 0, 0);
+            g.drawString(structureBuilder.getPlacingInfo(), 0, 0, 0);
         }
     }
     
@@ -77,11 +79,7 @@ public class EditorCanvas extends UIComponent {
         g.drawString(cursorX + " " + cursorY, x, y + r, Graphics.TOP | Graphics.LEFT);
     }
     
-    private void drawElements(Graphics g, int x0, int y0) {
-        if (structurePlacer.getElementsCount() == 0) {
-            return;
-        }
-        Element[] elements = structurePlacer.getElementsAsArray();
+    protected void drawElements(Graphics g, int x0, int y0, Element[] elements) {
         for (int i = 0; i < elements.length; i++) {
         	try {
 	        	Element element = elements[i];
@@ -126,7 +124,7 @@ public class EditorCanvas extends UIComponent {
         return true;
     }
 
-    public boolean handlePointerReleased(int x, int y) {
+    public boolean handlePointerClicked(int x, int y) {
         pointerHandler.dragged = false;
         pointerHandler.handlePointerReleased(x, y);
         return true;
@@ -144,7 +142,7 @@ public class EditorCanvas extends UIComponent {
         }
         
         int minStep = count * count;
-        switch (RootContainer.getGameActionn(keyCode)) {
+        switch (RootContainer.getAction(keyCode)) {
             case Keys.UP:
                 cursorY -= Math.max(minStep, zoomOut / 1000);
                 break;
@@ -158,7 +156,7 @@ public class EditorCanvas extends UIComponent {
                 cursorX += Math.max(minStep, zoomOut / 1000);
                 break;
             case Keys.FIRE:
-                structurePlacer.handleNextPoint((short) cursorX, (short) cursorY, false);
+                structureBuilder.handleNextPoint((short) cursorX, (short) cursorY, false);
                 break;
             default:
                 switch (keyCode) {
@@ -192,7 +190,7 @@ public class EditorCanvas extends UIComponent {
         int minStep = Math.max(zoomOut / 100, 1);
         int a = keyRepeats;
         int step = (minStep + a) * pressedCount;
-        switch (RootContainer.getGameActionn(keyCode)) {
+        switch (RootContainer.getAction(keyCode)) {
             case Keys.UP:
                 cursorY -= step;
                 break;
@@ -330,7 +328,7 @@ public class EditorCanvas extends UIComponent {
             }
             
             if (!dragged) {
-                structurePlacer.handleNextPoint((short) cursorX, (short) cursorY, false);
+                structureBuilder.handleNextPoint((short) cursorX, (short) cursorY, false);
             }
             dragged = false;
         }
@@ -342,7 +340,7 @@ public class EditorCanvas extends UIComponent {
 
             recalcOffset();
 
-            structurePlacer.handleNextPoint((short) cursorX, (short) cursorY, true);
+            structureBuilder.handleNextPoint((short) cursorX, (short) cursorY, true);
         }
     }
     

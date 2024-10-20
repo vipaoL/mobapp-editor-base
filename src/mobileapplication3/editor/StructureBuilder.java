@@ -10,6 +10,7 @@ import java.util.Vector;
 
 import mobileapplication3.editor.elements.Element;
 import mobileapplication3.editor.elements.EndPoint;
+import mobileapplication3.editor.elements.LevelStart;
 import mobileapplication3.editor.elements.Element.PlacementStep;
 import mobileapplication3.platform.FileUtils;
 
@@ -18,24 +19,30 @@ import mobileapplication3.platform.FileUtils;
  * @author vipaol
  */
 
-public class StructureBuilder {
+public abstract class StructureBuilder {
     
     public static final int PLACE_NOTHING = -1;
+    public static final int MODE_STRUCTURE = EditorUI.MODE_STRUCTURE, MODE_LEVEL = EditorUI.MODE_LEVEL;
+    private int mode = MODE_STRUCTURE;
     private Vector buffer;
     public Element placingNow;
     private NextPointHandler nextPointHandler;
-    private Feedback feedback;
     public boolean isEditing = false;
-
-    public StructureBuilder(Feedback feedback) {
-        this.feedback = feedback;
-        buffer = new Vector();
-        buffer.addElement(new EndPoint().setArgs(new short[]{0, 0}));
-    }
+    private String path = null;
+    
+    public StructureBuilder(int mode) {
+    	this.mode = mode;
+    	buffer = new Vector();
+    	if (mode == MODE_STRUCTURE) {
+    		buffer.addElement(new EndPoint().setArgs(new short[]{0, 0}));
+    	} else if (mode == MODE_LEVEL) {
+    		buffer.addElement(new LevelStart().setArgs(new short[]{0, -200}));
+    	}
+	}
     
     public void place(short id, short x, short y) throws IllegalArgumentException {
     	if (placingNow != null) {
-    		feedback.onUpdate();
+    		onUpdate();
     	}
     	isEditing = false;
         placingNow = Element.createTypedInstance(id);
@@ -79,7 +86,7 @@ public class StructureBuilder {
             	}
                 placingNow = null;
                 nextPointHandler = null;
-                feedback.onUpdate();
+                onUpdate();
             }
         }
     }
@@ -119,6 +126,14 @@ public class StructureBuilder {
         data[carriage] = 0;
         return data;
     }
+
+    public short[][] asShortArrays() {
+        short[][] data = new short[getElementsCount()][];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = ((Element) buffer.elementAt(i)).getAsShortArray();
+        }
+        return data;
+    }
     
     public void saveToFile(String path) throws IOException, SecurityException {
         FileUtils.saveShortArrayToFile(asShortArray(), path);
@@ -132,12 +147,17 @@ public class StructureBuilder {
                 return;
             }
             setElements(elements);
-            feedback.onUpdate();
+            this.path = path;
+            onUpdate();
         } catch(Exception ex) {
             ex.printStackTrace();
         }
     }
-    
+
+    public String getFilePath() {
+        return path;
+    }
+
     public void setElements(Element[] elements) {
     	buffer = new Vector();
     	for (int i = 0; i < elements.length; i++) {
@@ -147,11 +167,11 @@ public class StructureBuilder {
                 System.out.println("elements["+i+"] is null. skipping");
             }
         }
-        feedback.onUpdate();
+        onUpdate();
     }
     
     public void remove(int i) {
-        if (buffer.elementAt(i) instanceof EndPoint) {
+        if (buffer.elementAt(i) instanceof EndPoint || buffer.elementAt(i) instanceof LevelStart) {
             return;
         }
         
@@ -167,7 +187,7 @@ public class StructureBuilder {
         if (needToRecalcEndPoint) {
             recalcEndPoint();
         }
-        feedback.onUpdate();
+        onUpdate();
     }
     
     public void remove(Element e) {
@@ -182,6 +202,10 @@ public class StructureBuilder {
     }
     
     public void recalcEndPoint() {
+    	if (mode == MODE_LEVEL) {
+    		return;
+    	}
+
     	Element[] elements = getElementsAsArray();
         EndPoint endPoint = (EndPoint) elements[0];
         endPoint.setArgs(EndPoint.findEndPoint(elements));
@@ -219,6 +243,12 @@ public class StructureBuilder {
     	}
     }
     
+    public int getMode() {
+    	return mode;
+    }
+    
+    public abstract void onUpdate();
+    
     private class NextPointHandler {
         public int step = 0;
         public boolean showingPreview = false;
@@ -246,9 +276,5 @@ public class StructureBuilder {
         	return placingNow.getAllSteps()[step];
         }
         
-    }
-    
-    public interface Feedback {
-        void onUpdate();
     }
 }

@@ -1,6 +1,7 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
+import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
 
 public class Accelerator extends Element {
@@ -145,9 +146,9 @@ public class Accelerator extends Element {
 		return new short[] {x, y, l, thickness, angle, directionOffset, m, effectDuration};
 	}
 
-	public Argument[] getArgs() {
-    	return new Argument[] {
-    			new Argument("X") {
+	public Property[] getArgs() {
+    	return new Property[] {
+    			new Property("X") {
 					public void setValue(short value) {
 						x = value;
 					}
@@ -156,7 +157,7 @@ public class Accelerator extends Element {
 						return x;
 					}
     			},
-    			new Argument("Y") {
+    			new Property("Y") {
 					public void setValue(short value) {
 						y = value;
 					}
@@ -165,7 +166,7 @@ public class Accelerator extends Element {
 						return y;
 					}
     			},
-    			new Argument("L") {
+    			new Property("L") {
 					public void setValue(short value) {
 						l = value;
 					}
@@ -178,7 +179,7 @@ public class Accelerator extends Element {
 						return 0;
 					}
     			},
-    			new Argument("Thickness") {
+    			new Property("Thickness") {
 					public void setValue(short value) {
 						thickness = value;
 					}
@@ -195,7 +196,7 @@ public class Accelerator extends Element {
 						return (short) (l/2);
 					}
     			},
-    			new Argument("Angle", true) {
+    			new Property("Angle", true) {
 					public void setValue(short value) {
 						angle = value;
 					}
@@ -212,7 +213,7 @@ public class Accelerator extends Element {
 						return 360;
 					}
     			},
-    			new Argument("Speed direction offset") {
+    			new Property("Speed direction offset") {
 					public void setValue(short value) {
 						directionOffset = value;
 					}
@@ -229,7 +230,7 @@ public class Accelerator extends Element {
 						return 360;
 					}
     			},
-    			new Argument("Speed multiplier") {
+    			new Property("Speed multiplier") {
 					public void setValue(short value) {
 						m = value;
 					}
@@ -246,7 +247,7 @@ public class Accelerator extends Element {
 						return 2048;
 					}
     			},
-    			new Argument("Effect duration (ticks)") {
+    			new Property("Effect duration (ticks)") {
 					public void setValue(short value) {
 						effectDuration = value;
 					}
@@ -271,7 +272,7 @@ public class Accelerator extends Element {
 	}
 
 	public int getStepsToPlace() {
-		return stepsToPlace[ACCELERATOR];
+		return STEPS_TO_PLACE[ACCELERATOR];
 	}
 
 	public String getName() {

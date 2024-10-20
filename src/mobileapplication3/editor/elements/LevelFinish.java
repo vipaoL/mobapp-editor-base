@@ -1,6 +1,7 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
+import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
 
 public class LevelFinish extends Element {
@@ -108,9 +109,9 @@ public class LevelFinish extends Element {
 		return new short[] {x, y, l, thickness, angle};
 	}
 
-	public Argument[] getArgs() {
-    	return new Argument[] {
-    			new Argument("X") {
+	public Property[] getArgs() {
+    	return new Property[] {
+    			new Property("X") {
 					public void setValue(short value) {
 						x = value;
 					}
@@ -119,7 +120,7 @@ public class LevelFinish extends Element {
 						return x;
 					}
     			},
-    			new Argument("Y") {
+    			new Property("Y") {
 					public void setValue(short value) {
 						y = value;
 					}
@@ -128,7 +129,7 @@ public class LevelFinish extends Element {
 						return y;
 					}
     			},
-    			new Argument("L") {
+    			new Property("L") {
 					public void setValue(short value) {
 						l = value;
 					}
@@ -141,7 +142,7 @@ public class LevelFinish extends Element {
 						return 0;
 					}
     			},
-    			new Argument("Thickness") {
+    			new Property("Thickness") {
 					public void setValue(short value) {
 						thickness = value;
 					}
@@ -158,7 +159,7 @@ public class LevelFinish extends Element {
 						return (short) (l/2);
 					}
     			},
-    			new Argument("Angle", true) {
+    			new Property("Angle", true) {
 					public void setValue(short value) {
 						angle = value;
 					}
@@ -183,7 +184,7 @@ public class LevelFinish extends Element {
 	}
 
 	public int getStepsToPlace() {
-		return stepsToPlace[getID()];
+		return STEPS_TO_PLACE[getID()];
 	}
 
 	public String getName() {

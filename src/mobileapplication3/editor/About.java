@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Image;
-import mobileapplication3.ui.AbstractPopupWindow;
+import mobileapplication3.ui.AbstractPopupPage;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.Container;
@@ -23,7 +23,7 @@ import mobileapplication3.ui.UIComponent;
  *
  * @author vipaol
  */
-public class About extends AbstractPopupWindow {
+public class About extends AbstractPopupPage {
     private static final String LINK = "https://github.com/vipaoL/mobapp-editor";
     private static final String LINK_PREVIEW = "vipaoL/mobapp-editor";
     private static final String LINK2 = "https://t.me/mobapp_game";
@@ -43,12 +43,8 @@ public class About extends AbstractPopupWindow {
         };
     }
     
-    public void init() {
-    	super.init();
-    }
-
-    protected IUIComponent initAndGetPageContent() {
-        Image logoImage = null;
+    public static UIComponent getAppLogo() {
+    	Image logoImage = null;
         String errorMessage = null;
 
         try {
@@ -65,7 +61,7 @@ public class About extends AbstractPopupWindow {
         }
 
 
-        final UIComponent logo;
+        UIComponent logo;
         if (logoImage != null) {
             logo = new ImageComponent(logoImage);
             logo.setBgColor(COLOR_ACCENT_MUTED);
@@ -73,7 +69,11 @@ public class About extends AbstractPopupWindow {
             logo = new TextComponent("Here could be your ad. " + errorMessage);
             logo.setBgColor(COLOR_ACCENT_MUTED);
         }
+        return logo;
+    }
 
+    protected IUIComponent initAndGetPageContent() {
+    	final UIComponent logo = getAppLogo();
         Button[] settingsButtons = new Button[]{
             new Button("Open GitHub " + LINK_PREVIEW) {
                 public void buttonPressed() {

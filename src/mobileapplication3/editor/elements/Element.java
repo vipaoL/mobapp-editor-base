@@ -6,6 +6,7 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
+import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -23,10 +24,11 @@ public abstract class Element {
     public static final short SINE = 6;
     public static final short ACCELERATOR = 7;
     public static final short TRAMPOLINE = 8;
-    public static final short LEVEL_FINISH = 9;
+    public static final short LEVEL_START = 9;
+    public static final short LEVEL_FINISH = 10;
     
-    public static final int[] ARGS_NUMBER = {0, /*1*/2, /*2*/4, /*3*/7, /*4*/9, /*5*/10, /*6*/5, /*7*/8, /*8*/8, /*9*/8};
-    public static final int[] stepsToPlace = {0, /*1*/1, /*2*/2, /*3*/2, /*4*/2, /*5*/2, /*6*/3, /*7*/2, /*8*/2, /*9*/2};
+    public static final int[] ARGS_NUMBER = {0, /*1*/2, /*2*/4, /*3*/7, /*4*/9, /*5*/10, /*6*/5, /*7*/8, /*8*/8, /*9*/2, /*10*/5};
+    public static final int[] STEPS_TO_PLACE = {0, /*1*/1, /*2*/2, /*3*/2, /*4*/2, /*5*/2, /*6*/3, /*7*/2, /*8*/2, /*9*/1, /*10*/2};
     
     public static final int LINE_THICKNESS = 24;
     
@@ -60,6 +62,8 @@ public abstract class Element {
                 return new Sine();
             case Element.ACCELERATOR:
                 return new Accelerator();
+            case Element.LEVEL_START:
+            	return new LevelStart();
             case Element.LEVEL_FINISH:
             	return new LevelFinish();
             default:
@@ -131,7 +135,7 @@ public abstract class Element {
     }
     
     public Element clone() {
-    	if (getID() == END_POINT) {
+    	if (getID() == END_POINT || getID() == LEVEL_START) {
     		return null;
     	}
     	
@@ -150,7 +154,7 @@ public abstract class Element {
     
     public abstract short[] getArgsValues();
     
-    public abstract Argument[] getArgs();
+    public abstract Property[] getArgs();
     
     public abstract short getID();
     
@@ -167,44 +171,6 @@ public abstract class Element {
     public abstract boolean isBody();
     
     public abstract void recalcCalculatedArgs();
-    
-    public abstract class Argument {
-    	private String name;
-    	private boolean isCalculated;
-    	
-    	/**
-    	 *  if it is calculated automatically
-    	 *  the user shouldn't have ability to change it manually
-    	 */
-    	public Argument(String name, boolean isCalculatedAutomatically) {
-    		//System.out.println(name + ", calculated=" + isCalculatedAutomatically);
-    		isCalculated = isCalculatedAutomatically;
-    		if (isCalculated) {
-    			name += " (calculated)";
-    		}
-    		this.name = name;
-		}
-    	
-    	public Argument(String name) {
-    		this(name, false);
-		}
-    	
-    	public abstract void setValue(short value);
-    	public abstract short getValue();
-    	public final String getName() {
-    		return name;
-    	};
-    	public short getMaxValue() {
-    		return Short.MAX_VALUE;
-    	}
-    	public short getMinValue() {
-    		return Short.MIN_VALUE;
-    	}
-    	
-    	public final boolean isCalculated() {
-			return isCalculated;
-		}
-    }
     
     public abstract class PlacementStep {
         public abstract void place(short pointX, short pointY);

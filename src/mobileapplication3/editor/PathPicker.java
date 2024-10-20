@@ -5,21 +5,20 @@
  */
 package mobileapplication3.editor;
 
+import java.io.IOException;
+import java.util.Calendar;
+
 import mobileapplication3.platform.FileUtils;
 import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Font;
 import mobileapplication3.platform.ui.Graphics;
 import mobileapplication3.platform.ui.Image;
-import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.ButtonRow;
 import mobileapplication3.ui.Container;
 import mobileapplication3.ui.IUIComponent;
 import mobileapplication3.ui.TextComponent;
-
-import java.io.IOException;
-import java.util.Calendar;
 
 /**
  *
@@ -46,6 +45,11 @@ public class PathPicker extends Container {
     private int currentTarget = TARGET_SAVE, btnH;
     private String currentFolder = null, pickedPath, fileName = "";
     private String questionTemplate = "";
+    
+    public PathPicker() {
+    	initUI();
+    	setComponents(new IUIComponent[]{list, question, title, actionButtonPanel});
+    }
     
     public PathPicker pickFolder(String question, Feedback onComplete) {
         return pickFolder(null, question, onComplete);
@@ -168,7 +172,6 @@ public class PathPicker extends Container {
             list = (ButtonCol) new ButtonCol()
                     .enableScrolling(true, true)
                     .setIsSelectionEnabled(true)
-                    .setIsSelectionVisible(RootContainer.displayKbHints)
                     .setButtonsBgPadding(3)
                     .setButtonsBgColor(0x555555);
         }
@@ -207,11 +210,6 @@ public class PathPicker extends Container {
     
     public boolean canBeFocused() {
     	return isVisible;
-    }
-    
-    public void init() {
-    	initUI();
-    	setComponents(new IUIComponent[]{list, question, title, actionButtonPanel});
     }
     
     public Container setBgImage(Image bg) {
@@ -257,7 +255,6 @@ public class PathPicker extends Container {
     public interface Feedback {
         void onComplete(final String path);
         void onCancel();
-        void needRepaint();
     }
     
 }

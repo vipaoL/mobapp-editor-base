@@ -12,7 +12,7 @@ import mobileapplication3.platform.ui.Graphics;
  *
  * @author vipaol
  */
-public class EndPoint extends Element {
+public class LevelStart extends Element {
     
     private short x, y;
     
@@ -40,9 +40,9 @@ public class EndPoint extends Element {
     }
     
     public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
-        int r = 3;
+    	int r = 3;
         int prevColor = g.getColor();
-        g.setColor(0xff0000);
+        g.setColor(0x00ff00);
         g.fillArc(xToPX(x, zoomOut, offsetX) - r, yToPX(y, zoomOut, offsetY) - r, r*2, r*2, 0, 360);
         g.setColor(prevColor);
     }
@@ -82,15 +82,15 @@ public class EndPoint extends Element {
     }
 
     public short getID() {
-        return Element.END_POINT;
+        return Element.LEVEL_START;
     }
 
     public int getStepsToPlace() {
-        return 1;
+        return STEPS_TO_PLACE[getID()];
     }
     
     public String getName() {
-        return "End point";
+        return "Level Start";
     }
     
     public void move(short dx, short dy) {
@@ -102,45 +102,8 @@ public class EndPoint extends Element {
     	return new short[] {x, y};
     }
     
-    public short[] getEndPoint() throws Exception {
-        throw new Exception("Never ask end point its end point");
-    }
-    
-    public static boolean compare(short[] oldEndPoint, short[] newEndPoint) {
-        short oldX = oldEndPoint[0];
-        short oldY = oldEndPoint[1];
-        short newX = newEndPoint[0];
-        short newY = newEndPoint[1];
-        if (newX >= oldX) {
-            if (newX > oldX || (newY > oldY)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    public static short[] compareAsEndPoints(short[] a, short[] b) {
-		if (compare(a, b)) {
-			return b;
-		} else {
-			return a;
-		}
-	}
-    
-    public static short[] findEndPoint(Element[] elements) {
-    	short[] endPoint = {0, 0};
-        short[] mayBeEndPoint = endPoint;
-        for (int i = 1; i < elements.length; i++) {
-            try {
-                mayBeEndPoint = elements[i].getEndPoint();
-                if (EndPoint.compare(endPoint, mayBeEndPoint)) {
-                    endPoint = mayBeEndPoint;
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-        }
-        return endPoint;
+    public short[] getEndPoint() {
+    	return new short[] {x, y};
     }
 
 	public boolean isBody() {
@@ -148,5 +111,11 @@ public class EndPoint extends Element {
 	}
 
 	public void recalcCalculatedArgs() { }
+	
+	int carbodyLength = 240;
+    int carbodyHeight = 40;
+    int wr = 40;
+    int carX = 0 - (carbodyLength / 2 - wr);
+    int carY = 0 - wr / 2 * 3 - 2;
     
 }

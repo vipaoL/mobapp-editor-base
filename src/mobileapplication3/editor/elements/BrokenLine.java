@@ -6,6 +6,7 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
+import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -133,10 +134,10 @@ public class BrokenLine extends Line {
         return new short[]{x1, y1, x2, y2, thickness, platformLength, spacing, l, ang};
     }
     
-    public Argument[] getArgs() {
-    	Argument[] superArgs = super.getArgs();
-    	Argument[] thisArgs = {
-    			new Argument("Thickness") {
+    public Property[] getArgs() {
+    	Property[] superArgs = super.getArgs();
+    	Property[] thisArgs = {
+    			new Property("Thickness") {
 					public void setValue(short value) {
 						thickness = value;
 					}
@@ -153,7 +154,7 @@ public class BrokenLine extends Line {
 						return (short) (platformLength / 2);
 					}
     			},
-    			new Argument("Platform length", true) {
+    			new Property("Platform length", true) {
 					public void setValue(short value) {
 						platformLength = value;
 					}
@@ -166,7 +167,7 @@ public class BrokenLine extends Line {
 						return 0;
 					}
     			},
-    			new Argument("Spacing") {
+    			new Property("Spacing") {
 					public void setValue(short value) {
 						spacing = value;
 					}
@@ -179,7 +180,7 @@ public class BrokenLine extends Line {
 						return 0;
 					}
     			},
-    			new Argument("Length", true) {
+    			new Property("Length", true) {
 					public void setValue(short value) {
 						l = value;
 					}
@@ -192,7 +193,7 @@ public class BrokenLine extends Line {
 						return 0;
 					}
     			},
-    			new Argument("Angle", true) {
+    			new Property("Angle", true) {
 					public void setValue(short value) {
 						ang = value;
 					}
@@ -210,7 +211,7 @@ public class BrokenLine extends Line {
 					}
     			}
     	};
-    	Argument[] args = new Argument[superArgs.length + thisArgs.length];
+    	Property[] args = new Property[superArgs.length + thisArgs.length];
     	System.arraycopy(superArgs, 0, args, 0, superArgs.length);
     	System.arraycopy(thisArgs, 0, args, superArgs.length, thisArgs.length);
     	return args; 

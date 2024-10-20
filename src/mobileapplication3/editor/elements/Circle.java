@@ -6,6 +6,7 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
+import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
 
 /**
@@ -182,9 +183,9 @@ public class Circle extends AbstractCurve {
         return args;
     }
     
-    public Argument[] getArgs() {
-    	return new Argument[] {
-    			new Argument("X") {
+    public Property[] getArgs() {
+    	return new Property[] {
+    			new Property("X") {
 					public void setValue(short value) {
 						if (x != value) {
 							pointsCache = null;
@@ -196,7 +197,7 @@ public class Circle extends AbstractCurve {
 						return x;
 					}
     			},
-    			new Argument("Y") {
+    			new Property("Y") {
 					public void setValue(short value) {
 						if (y != value) {
 							pointsCache = null;
@@ -208,7 +209,7 @@ public class Circle extends AbstractCurve {
 						return y;
 					}
     			},
-    			new Argument("R") {
+    			new Property("R") {
 					public void setValue(short value) {
 						if (r != value) {
 							pointsCache = null;
@@ -224,7 +225,7 @@ public class Circle extends AbstractCurve {
 						return 1;
 					}
     			},
-    			new Argument("Arc angle") {
+    			new Property("Arc angle") {
 					public void setValue(short value) {
 						if (arcAngle != value) {
 							pointsCache = null;
@@ -244,7 +245,7 @@ public class Circle extends AbstractCurve {
 						return 360;
 					}
     			},
-    			new Argument("Start angle") {
+    			new Property("Start angle") {
 					public void setValue(short value) {
 						if (startAngle != value) {
 							pointsCache = null;
@@ -264,7 +265,7 @@ public class Circle extends AbstractCurve {
 						return 360;
 					}
     			},
-    			new Argument("X-axis scale") {
+    			new Property("X-axis scale") {
 					public void setValue(short value) {
 						if (kx != value) {
 							pointsCache = null;
@@ -284,7 +285,7 @@ public class Circle extends AbstractCurve {
 						return 2048;
 					}
     			},
-    			new Argument("Y-axis scale") {
+    			new Property("Y-axis scale") {
 					public void setValue(short value) {
 						if (ky != value) {
 							pointsCache = null;
