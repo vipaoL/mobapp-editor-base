@@ -13,6 +13,7 @@ import mobileapplication3.editor.elements.EndPoint;
 import mobileapplication3.editor.elements.LevelStart;
 import mobileapplication3.editor.elements.Element.PlacementStep;
 import mobileapplication3.platform.FileUtils;
+import mobileapplication3.platform.Logger;
 
 /**
  *
@@ -46,7 +47,7 @@ public abstract class StructureBuilder {
     	}
     	isEditing = false;
         placingNow = Element.createTypedInstance(id);
-        System.out.println("Placing " + id);
+        Logger.log("Placing " + id);
         nextPointHandler = new NextPointHandler();
         handleNextPoint(x, y, false);
         add(placingNow);
@@ -143,14 +144,14 @@ public abstract class StructureBuilder {
         try {
             Element[] elements = MGStructs.readMGStruct(path);
             if (elements == null) {
-                System.out.println("error: elements array is null");
+                Logger.log("error: elements array is null");
                 return;
             }
             setElements(elements);
             this.path = path;
             onUpdate();
         } catch(Exception ex) {
-            ex.printStackTrace();
+            Logger.log(ex);
         }
     }
 
@@ -164,7 +165,7 @@ public abstract class StructureBuilder {
             if (elements[i] != null) {
                 buffer.addElement(elements[i]);
             } else {
-                System.out.println("elements["+i+"] is null. skipping");
+                Logger.log("elements["+i+"] is null. skipping");
             }
         }
         onUpdate();
@@ -180,9 +181,9 @@ public abstract class StructureBuilder {
 //            (EndPoint) buffer.elementAt(0)).getArgs()
 //            needToRecalcEndPoint = ( == ((Element) buffer.elementAt(i)).getEndPoint();
 //        } catch (Exception ex) {
-//            ex.printStackTrace();
+//            Logger.log(ex);
 //        }
-//        System.out.println("needToRecalcEndPoint=" + needToRecalcEndPoint);
+//        Logger.log("needToRecalcEndPoint=" + needToRecalcEndPoint);
         buffer.removeElementAt(i);
         if (needToRecalcEndPoint) {
             recalcEndPoint();
@@ -265,7 +266,7 @@ public abstract class StructureBuilder {
             try {
                 getCurrentPlacementStep().place(x, y);
             } catch (Exception ex) {
-                ex.printStackTrace();
+                Logger.log(ex);
             }
             if (!showingPreview) {
                 step++;

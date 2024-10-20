@@ -6,6 +6,7 @@
 package mobileapplication3.editor.setup;
 
 import mobileapplication3.editor.EditorSettings;
+import mobileapplication3.platform.Logger;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.Container;
 import mobileapplication3.ui.IUIComponent;
@@ -20,12 +21,12 @@ public class SetupWizard extends Container {
     private FinishSetup finishSetup;
     private Feedback pageSwitcher = new Feedback() {
         public void nextPage() {
-            System.out.println(currentPageI + " - current. switching to next page");
+            Logger.log(currentPageI + " - current. switching to next page");
             setCurrentPage(currentPageI + 1);
         }
 
         public void prevPage() {
-            System.out.println(currentPageI + " - current. switching to prev page");
+            Logger.log(currentPageI + " - current. switching to prev page");
             setCurrentPage(currentPageI - 1);
         }
         
@@ -71,7 +72,7 @@ public class SetupWizard extends Container {
     }
     
     private void setCurrentPage(int i) {
-        System.out.println("setting page i=" + i);
+        Logger.log("setting page i=" + i);
         pages[currentPageI].setParent(this);
         pages[currentPageI].setVisible(false);
         if (i < 0) {

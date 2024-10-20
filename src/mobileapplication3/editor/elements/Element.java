@@ -5,6 +5,7 @@
  */
 package mobileapplication3.editor.elements;
 
+import mobileapplication3.platform.Logger;
 import mobileapplication3.platform.Mathh;
 import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
@@ -67,7 +68,7 @@ public abstract class Element {
             case Element.LEVEL_FINISH:
             	return new LevelFinish();
             default:
-                System.out.println("Unknown id: " + id);
+                Logger.log("Unknown id: " + id);
                 return null;
         }
     }
@@ -78,7 +79,7 @@ public abstract class Element {
         for (int i = 0; i < args.length; i++) {
             System.out.print(" " + args[i]);
         }
-        System.out.println("");
+        Logger.log("");
     }
     
     public static Element readFromData(short[] data) {
