@@ -164,7 +164,6 @@ public class PathPicker extends AbstractPopupPage {
     }
     
     private void initUI() {
-        list.setButtonsBgPadding(3).setButtonsBgColor(0x555555);
         question.enableHorizontalScrolling(true).setBgColor(COLOR_TRANSPARENT);
     }
     
@@ -199,8 +198,9 @@ public class PathPicker extends AbstractPopupPage {
     			        .setSize(w, Font.getDefaultFontHeight())
     			        .setPos(x0 + w/2, y0 + h, TextComponent.HCENTER | TextComponent.BOTTOM);
     	        list
+    	        		.setButtonsBgPadding(margin/4)
     	                .setSize(w, question.getTopY() - margin - y0)
-    	                .setPos(x0 + w/2, y0, ButtonCol.HCENTER | ButtonCol.TOP);
+    	                .setPos(x0 + w/2, question.getTopY() - margin, ButtonCol.HCENTER | ButtonCol.BOTTOM);
     	    }
 		};
     }

@@ -151,7 +151,7 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 			    buttons
 			            .setButtonsBgPadding(w/128)
 			            .setSize(w, backButtonComponent.getTopY() - title.getBottomY())
-			            .setPos(x0 + w/2, title.getBottomY(), TOP | HCENTER);
+			            .setPos(x0 + w/2, backButtonComponent.getTopY(), BOTTOM | HCENTER);
 				break;
 			case LAYOUT_GRID:
 				backButtonComponent
@@ -161,7 +161,7 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 						.setCols(Mathh.constrain(1, w/Font.getDefaultFontHeight()/5, 3))//.setCols(3)
 						.setElementsPadding(w/128)
 						.setSize(w, backButtonComponent.getTopY() - title.getBottomY())
-						.setPos(x0 + w/2, title.getBottomY(), TOP | HCENTER);
+						.setPos(x0 + w/2, backButtonComponent.getTopY(), BOTTOM | HCENTER);
 				break;
 		}
         
