@@ -13,7 +13,7 @@ import mobileapplication3.platform.Settings;
  */
 public class EditorSettings {
     public static final String
-    		RECORD_STORE_SETTINGS = "settings",
+    		RECORD_STORE_SETTINGS = "editorsettings",
 
             IS_SETUP_WIZARD_COMPLETED = "setupDone",
             GAME_FOLDER_PATH = "MGPath",
@@ -22,7 +22,8 @@ public class EditorSettings {
             LISTS_KEY_REPEATS = "listKRepeats",
             AUTO_SAVE = "autoSave",
             WHAT_TO_LOAD_AUTOMATICALLY = "alwLoad",
-    		SHOW_LOG = "showLog";
+    		SHOW_LOG = "showLog",
+    		KINETIC_SCROLL = "kScrol";
 
     public static final int
             OPTION_ALWAYS_LOAD_NONE = 0,
@@ -48,10 +49,25 @@ public class EditorSettings {
     	            LISTS_KEY_REPEATS,
     	            AUTO_SAVE,
                     WHAT_TO_LOAD_AUTOMATICALLY,
-                    SHOW_LOG
+                    SHOW_LOG,
+                    KINETIC_SCROLL
     	        }, RECORD_STORE_SETTINGS);
     	}
     	return settingsInst;
+    }
+
+    ///
+    
+    public static boolean getKineticScrollingEnabled() {
+        return getSettingsInst().getBool(KINETIC_SCROLL);
+    }
+    
+    public static boolean getKineticScrollingEnabled(boolean defaultValue) {
+        return getSettingsInst().getBool(KINETIC_SCROLL, defaultValue);
+    }
+    
+    public static void setKineticScrollingEnabled(boolean b) {
+    	getSettingsInst().set(KINETIC_SCROLL, b);
     }
 
     ///
@@ -139,20 +155,16 @@ public class EditorSettings {
     
     ///
 
-    public static boolean getAnimsEnabled() {
+    public static boolean getKbSmoothScrollingEnabled() {
         return getSettingsInst().getBool(ANIMS);
     }
 
-    public static boolean getAnimsEnabled(boolean defaultValue) {
+    public static boolean getKbSmoothScrollingEnabled(boolean defaultValue) {
         return getSettingsInst().getBool(ANIMS, defaultValue);
     }
 
-    public static void setAnimsEnabled(boolean b) {
+    public static void setKbSmoothScrollingEnabled(boolean b) {
     	getSettingsInst().set(ANIMS, b);
-    }
-
-    public static boolean toggleAnims() {
-    	return getSettingsInst().toggleBool(ANIMS);
     }
     
 ///

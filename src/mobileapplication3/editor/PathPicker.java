@@ -9,14 +9,14 @@ import java.io.IOException;
 import java.util.Calendar;
 
 import mobileapplication3.platform.FileUtils;
+import mobileapplication3.platform.Logger;
 import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Font;
-import mobileapplication3.platform.ui.Graphics;
-import mobileapplication3.platform.ui.Image;
+import mobileapplication3.ui.AbstractPopupPage;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
-import mobileapplication3.ui.ButtonRow;
 import mobileapplication3.ui.Container;
+import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.IUIComponent;
 import mobileapplication3.ui.TextComponent;
 
@@ -29,26 +29,26 @@ import mobileapplication3.ui.TextComponent;
 // TODO: move list to FileManager
 
 
-public class PathPicker extends Container {
+public class PathPicker extends AbstractPopupPage {
     
-    public static final String QUESTION_REPLACE_WITH_PATH = ".curr_folder.";
+    private static final String STRUCTURE_FILE_EXTENSIOM = ".mgstruct";
+    private static final String LEVEL_FILE_EXTENSIOM = ".mglvl";
+	public static final String QUESTION_REPLACE_WITH_PATH = ".curr_folder.";
     private static final int TARGET_SAVE = 0, TARGET_OPEN = 1;
-    
-    private Button okBtn, cancelBtn;
-    private TextComponent title = null;
-    private TextComponent question = null;
-    private ButtonCol list;
-    private ButtonRow actionButtonPanel;
-    private Button[] actionButtons;
+    public static final int MODE_STRUCTURE = EditorUI.MODE_STRUCTURE, MODE_LEVEL = EditorUI.MODE_LEVEL;
+
+    private TextComponent question = new TextComponent();
+    private ButtonCol list = new ButtonCol();
     private Feedback feedback;
     
-    private int currentTarget = TARGET_SAVE, btnH;
+    private int currentTarget = TARGET_SAVE, mode;
     private String currentFolder = null, pickedPath, fileName = "";
     private String questionTemplate = "";
     
-    public PathPicker() {
+    public PathPicker(int mode, IPopupFeedback parent) {
+    	super("File picker", parent);
+    	this.mode = mode;
     	initUI();
-    	setComponents(new IUIComponent[]{list, question, title, actionButtonPanel});
     }
     
     public PathPicker pickFolder(String question, Feedback onComplete) {
@@ -87,7 +87,7 @@ public class PathPicker extends Container {
         
         if (currentTarget == TARGET_SAVE) {
             fileName = getTodaysFileName();
-            System.out.println(fileName);
+            Logger.log(fileName);
         }
         
         (new Thread(new Runnable() {
@@ -114,7 +114,7 @@ public class PathPicker extends Container {
                 try {
                     setPaths(FileUtils.list(currentFolder));
                 } catch (IOException ex) {
-                    ex.printStackTrace();
+                    Logger.log(ex);
                 }
             }
         })).start();
@@ -164,19 +164,12 @@ public class PathPicker extends Container {
     }
     
     private void initUI() {
-        setBgColor(COLOR_TRANSPARENT);
-        title = new TextComponent();
-        title.setBgColor(COLOR_TRANSPARENT);
-        
-        if (list == null) {
-            list = (ButtonCol) new ButtonCol()
-                    .enableScrolling(true, true)
-                    .setIsSelectionEnabled(true)
-                    .setButtonsBgPadding(3)
-                    .setButtonsBgColor(0x555555);
-        }
-        
-        okBtn = new Button("OK") {
+        list.setButtonsBgPadding(3).setButtonsBgColor(0x555555);
+        question.enableHorizontalScrolling(true).setBgColor(COLOR_TRANSPARENT);
+    }
+    
+    protected Button[] getActionButtons() {
+    	Button okBtn = new Button("OK") {
             public void buttonPressed() {
                 if (currentTarget == TARGET_OPEN && pickedPath.endsWith(String.valueOf(FileUtils.SEP))) {
                     return;
@@ -185,71 +178,63 @@ public class PathPicker extends Container {
             }
         };
         
-        cancelBtn = new Button("Cancel") {
+        Button cancelBtn = new Button("Cancel") {
             public void buttonPressed() {
                 setVisible(false);
                 feedback.onCancel();
             }
         };
-        
-        
-        actionButtons = new Button[]{okBtn, cancelBtn};
-        actionButtonPanel = (ButtonRow) new ButtonRow(actionButtons) {
-        	public boolean canBeFocused() {
-        		return false;
-        	}
-        }
-        		.setIsSelectionEnabled(false);
-                //.setButtonsBgColor(COLOR_TRANSPARENT);
-        actionButtonPanel.bindToSoftButtons(0, actionButtonPanel.getButtonCount() - 1);
-        
-        question = (TextComponent) new TextComponent()
-                .enableHorizontalScrolling(true)
-                .setBgColor(COLOR_TRANSPARENT);
+    	return new Button[]{okBtn, cancelBtn};
     }
     
-    public boolean canBeFocused() {
-    	return isVisible;
-    }
-    
-    public Container setBgImage(Image bg) {
-        if (bg != null) {
-            bg.blur();
-        }
-        return super.setBgImage(bg);
-    }
-    
-    public PathPicker setSizes(int w, int h, int btnH) {
-        this.btnH = btnH;
-        super.setSize(w, h);
-        return this;
-    }
+    protected IUIComponent initAndGetPageContent() {
+    	return new Container() {
+    		public void init() {
+    			setComponents(new IUIComponent[] {list, question});
+    			super.init();
+    		}
 
-    protected void onSetBounds(int x0, int y0, int w, int h) {
-        title
-                .setSize(w, TextComponent.HEIGHT_AUTO)
-                .setPos(x0 + w/2, y0 + Font.getDefaultFontHeight(), Graphics.HCENTER | Graphics.TOP);
-        actionButtonPanel
-                .setSize(w, btnH)
-                .setPos(x0, y0 + h, ButtonRow.BOTTOM | ButtonRow.LEFT);
-        list
-                .setSizes(w, h - btnH*3/2 - btnH*3/2, btnH, false)
-                .setPos(x0, y0 + h - btnH*3/2, ButtonCol.LEFT | ButtonCol.BOTTOM);
-        question
-                .setSize(w, Font.getDefaultFontHeight())
-                .setPos(x0 + w/2, y0 + h - btnH*5/4, TextComponent.HCENTER | TextComponent.VCENTER);
+    		protected void onSetBounds(int x0, int y0, int w, int h) {
+    	        question
+    			        .setSize(w, Font.getDefaultFontHeight())
+    			        .setPos(x0 + w/2, y0 + h, TextComponent.HCENTER | TextComponent.BOTTOM);
+    	        list
+    	                .setSize(w, question.getTopY() - margin - y0)
+    	                .setPos(x0 + w/2, y0, ButtonCol.HCENTER | ButtonCol.TOP);
+    	    }
+		};
     }
 
     private String getTodaysFileName() {
         Calendar calendar = Calendar.getInstance();
+        String fileExtension;
+        switch (mode) {
+		case MODE_STRUCTURE:
+			fileExtension = STRUCTURE_FILE_EXTENSIOM;
+			break;
+		case MODE_LEVEL:
+			fileExtension = LEVEL_FILE_EXTENSIOM;
+			break;
+		default:
+			fileExtension = ".unknown";
+			break;
+		}
         return calendar.get(Calendar.YEAR)
                 // it counts months from 0 while everything else from 1.
-                + "-" + (calendar.get(Calendar.MONTH) + 1) // why? who knows...
-                + "-" + calendar.get(Calendar.DAY_OF_MONTH)
-                + "_" + calendar.get(Calendar.HOUR_OF_DAY)
-                + "-" + calendar.get(Calendar.MINUTE)
-                + "-" + calendar.get(Calendar.SECOND)
-                + ".mgstruct";
+                + "-" + format((calendar.get(Calendar.MONTH) + 1)) // why? who knows...
+                + "-" + format(calendar.get(Calendar.DAY_OF_MONTH))
+                + "_" + format(calendar.get(Calendar.HOUR_OF_DAY))
+                + "-" + format(calendar.get(Calendar.MINUTE))
+                + "-" + format(calendar.get(Calendar.SECOND))
+                + fileExtension;
+    }
+    
+    private String format(int date) {
+    	String dateStr = String.valueOf(date);
+    	if (dateStr.length() < 2) {
+    		dateStr = "0" + dateStr;
+    	}
+    	return dateStr;
     }
     
     public interface Feedback {

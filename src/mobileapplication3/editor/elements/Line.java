@@ -5,8 +5,8 @@
  */
 package mobileapplication3.editor.elements;
 
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 /**
  *
@@ -78,8 +78,16 @@ public class Line extends Element {
         y2 = y;
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
-        g.drawLine(xToPX(x1, zoomOut, offsetX), yToPX(y1, zoomOut, offsetY), xToPX(x2, zoomOut, offsetX), yToPX(y2, zoomOut, offsetY), LINE_THICKNESS, zoomOut, drawThickness, true, true, true);
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
+    	g.setColor(getSuitableColor(drawAsSelected));
+        g.drawLine(
+        		xToPX(x1, zoomOut, offsetX),
+        		yToPX(y1, zoomOut, offsetY),
+        		xToPX(x2, zoomOut, offsetX),
+        		yToPX(y2, zoomOut, offsetY),
+        		LINE_THICKNESS,
+        		zoomOut, drawThickness, true, true, true
+        		);
     }
     
     public Element setArgs(short[] args) {

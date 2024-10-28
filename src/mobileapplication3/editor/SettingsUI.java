@@ -35,19 +35,29 @@ public class SettingsUI extends AbstractPopupPage {
     		new Button("Current game folder: " + EditorSettings.getGameFolderPath()) {
                 public void buttonPressed() { }
             }.setIsActive(false),//.setBgColorInactive(0x223322).setFontColorInactive(0xaaaaaa),
-            new Switch("Animations") {
+            new Switch("Smooth keyboard scrolling") {
 				public boolean getValue() {
-					return EditorSettings.getAnimsEnabled(true);
+					return EditorSettings.getKbSmoothScrollingEnabled();
 				}
 
 				public void setValue(boolean value) {
-					EditorSettings.setAnimsEnabled(value);
+					EditorSettings.setKbSmoothScrollingEnabled(value);
+					getUISettings().onChange();
+				}
+            },
+            new Switch("Kinetic touch scrolling") {
+				public boolean getValue() {
+					return EditorSettings.getKineticScrollingEnabled();
+				}
+
+				public void setValue(boolean value) {
+					EditorSettings.setKineticScrollingEnabled(value);
 					getUISettings().onChange();
 				}
             },
             new Switch("Transparent background of popups") {
                 public boolean getValue() {
-                    return EditorSettings.getTransparencyEnabled(true);
+                    return EditorSettings.getTransparencyEnabled();
                 }
 
                 public void setValue(boolean value) {
@@ -57,7 +67,7 @@ public class SettingsUI extends AbstractPopupPage {
             },
             new Switch("Key repeats in lists") {
 				public boolean getValue() {
-					return EditorSettings.getKeyRepeatedInListsEnabled(false);
+					return EditorSettings.getKeyRepeatedInListsEnabled();
 				}
 
 				public void setValue(boolean value) {
@@ -67,7 +77,7 @@ public class SettingsUI extends AbstractPopupPage {
             },
             new Switch("Auto-save") {
             	public boolean getValue() {
-					return EditorSettings.getAutoSaveEnabled(true);
+					return EditorSettings.getAutoSaveEnabled();
 				}
 
 				public void setValue(boolean value) {
@@ -105,13 +115,7 @@ public class SettingsUI extends AbstractPopupPage {
             }.setBgColor(0x550000)
         };
         
-        ButtonCol settingsList = (ButtonCol) new ButtonCol()
-                .enableScrolling(true, false)
-                .enableAnimations(false)
-                .trimHeight(false)
-                .setButtons(settingsButtons);
-        
-        return settingsList;
+        return new ButtonCol(settingsButtons);
     }
     
     public void setPageContentBounds(IUIComponent pageContent, int x0, int y0, int w, int h) {

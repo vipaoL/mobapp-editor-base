@@ -1,8 +1,8 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 public class Accelerator extends Element {
 	
@@ -52,7 +52,7 @@ public class Accelerator extends Element {
 		return new PlacementStep[0];
 	}
 
-	public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+	public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
 		int dx = (int) (l * Mathh.cos(angle) / 1000);
         int dy = (int) (l * Mathh.sin(angle) / 1000);
         int colorModifier = (m - 100) * 3;
@@ -62,7 +62,11 @@ public class Accelerator extends Element {
             red = 50;
             blue = 50;
         }
-        g.setColor(red, 0, blue);
+        if (!drawAsSelected) {
+        	g.setColor(red, 0, blue);
+        } else {
+        	g.setColor(getSuitableColor(drawAsSelected));
+        }
 		g.drawLine(
 				xToPX(x - dx/2, zoomOut, offsetX),
                 yToPX(y - dy/2, zoomOut, offsetY),

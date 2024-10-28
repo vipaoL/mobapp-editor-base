@@ -6,8 +6,8 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 /**
  *
@@ -370,7 +370,7 @@ public class Circle extends AbstractCurve {
         }
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
     	int centerMarkR = 4;
     	int leftX = xToPX(x - centerMarkR, zoomOut, offsetX);
     	int rightX = xToPX(x + centerMarkR, zoomOut, offsetX);
@@ -378,7 +378,7 @@ public class Circle extends AbstractCurve {
     	int bottomY = yToPX(y + centerMarkR, zoomOut, offsetY);
     	g.drawLine(leftX, topY, rightX, bottomY);
     	g.drawLine(rightX, topY, leftX, bottomY);
-    	super.paint(g, zoomOut, offsetX, offsetY, drawThickness);
+    	super.paint(g, zoomOut, offsetX, offsetY, drawThickness, drawAsSelected);
     }
     
     public void recalcCalculatedArgs() { }

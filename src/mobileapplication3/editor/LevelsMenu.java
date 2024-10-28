@@ -4,19 +4,18 @@ import java.io.IOException;
 import java.util.Vector;
 
 import mobileapplication3.editor.elements.Element;
-import mobileapplication3.platform.FileUtils;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.UIComponent;
 
-public class LevelEditorMenu extends AbstractEditorMenu {
+public class LevelsMenu extends AbstractEditorMenu {
 	
 	private String path = null;
 	
-	public LevelEditorMenu(final IPopupFeedback parent) {
-		super(parent, "Level editor");
+	public LevelsMenu(final IPopupFeedback parent) {
+		super(parent, "Levels");
 	}
 
 	private String getPath() {
@@ -36,7 +35,7 @@ public class LevelEditorMenu extends AbstractEditorMenu {
 		}
 		try {
 			for (int i = 0; i < files.length; i++) {
-				String path = getPath() + FileUtils.SEP + files[i];
+				String path = getPath() + files[i];
 				try {
 					gridContentVector.addElement(new StructureViewerInteractive(MGStructs.readMGStruct(path), path));
 				} catch (Exception ignored) { }
@@ -95,7 +94,7 @@ public class LevelEditorMenu extends AbstractEditorMenu {
 		}
 		
 		public void openInEditor() {
-			LevelEditorMenu.this.openInEditor(elements, path);
+			LevelsMenu.this.openInEditor(elements, path);
 		}
 	}
 	

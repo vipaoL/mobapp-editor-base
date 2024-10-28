@@ -37,7 +37,7 @@ public abstract class StructureBuilder {
     	if (mode == MODE_STRUCTURE) {
     		buffer.addElement(new EndPoint().setArgs(new short[]{0, 0}));
     	} else if (mode == MODE_LEVEL) {
-    		buffer.addElement(new LevelStart().setArgs(new short[]{0, -200}));
+    		buffer.addElement(new LevelStart().setArgs(new short[]{200, -200}));
     	}
 	}
     
@@ -157,6 +157,10 @@ public abstract class StructureBuilder {
 
     public String getFilePath() {
         return path;
+    }
+    
+    public void setFilePath(String path) {
+    	this.path = path;
     }
 
     public void setElements(Element[] elements) {

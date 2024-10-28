@@ -7,8 +7,8 @@ package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Logger;
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 /**
  *
@@ -32,6 +32,10 @@ public abstract class Element {
     public static final int[] STEPS_TO_PLACE = {0, /*1*/1, /*2*/2, /*3*/2, /*4*/2, /*5*/2, /*6*/3, /*7*/2, /*8*/2, /*9*/1, /*10*/2};
     
     public static final int LINE_THICKNESS = 24;
+
+    public static final int COLOR_LANDSCAPE = 0x4444ff;
+    public static final int COLOR_BODY = 0xffffff;
+    public static final int COLOR_SELECTED = 0xaaffff;
     
     protected Element() {}
 
@@ -75,11 +79,12 @@ public abstract class Element {
     
     public void printDebug() {
         short[] args = getArgsValues();
-        System.out.print("id="+getID());
+        StringBuffer sb = new StringBuffer();
+        sb.append("id="+getID());
         for (int i = 0; i < args.length; i++) {
-            System.out.print(" " + args[i]);
+            sb.append(" " + args[i]);
         }
-        Logger.log("");
+        Logger.log(sb.toString());
     }
     
     public static Element readFromData(short[] data) {
@@ -145,11 +150,22 @@ public abstract class Element {
     	return clone;
     }
     
+    protected int getSuitableColor(boolean drawAsSelected) {
+    	if (drawAsSelected) {
+    		return COLOR_SELECTED;
+    	}
+    	if (isBody()) {
+    		return COLOR_BODY;
+    	} else {
+    		return COLOR_LANDSCAPE;
+    	}
+    }
+    
     public abstract PlacementStep[] getPlacementSteps();
     
     public abstract PlacementStep[] getExtraEditingSteps();
     
-    public abstract void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness);
+    public abstract void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected);
     
     public abstract Element setArgs(short[] args);
     

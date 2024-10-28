@@ -1,13 +1,14 @@
 package mobileapplication3.editor;
 
 import mobileapplication3.editor.elements.Element;
-import mobileapplication3.platform.Property;
 import mobileapplication3.ui.AbstractPopupPage;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonComponent;
 import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.IUIComponent;
+import mobileapplication3.ui.Keys;
 import mobileapplication3.ui.List;
+import mobileapplication3.ui.Property;
 import mobileapplication3.ui.Slider;
 
 public class AdvancedElementEditUI extends AbstractPopupPage {
@@ -40,7 +41,7 @@ public class AdvancedElementEditUI extends AbstractPopupPage {
                 	element.setArgs(argsUnmodified);
                     close();
                 }
-            }
+            }.setBindedKeyCode(Keys.KEY_NUM0)
         };
     }
 
@@ -53,11 +54,7 @@ public class AdvancedElementEditUI extends AbstractPopupPage {
 		};
 		
 		refreshList();
-		
-		list.enableScrolling(true, false)
-            .trimHeight(true)
-            .setIsSelectionEnabled(true)
-            .setIsSelectionVisible(true);
+
 		return list;
 	}
 	

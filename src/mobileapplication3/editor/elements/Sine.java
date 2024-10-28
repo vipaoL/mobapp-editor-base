@@ -6,8 +6,8 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 /**
  *
@@ -336,7 +336,7 @@ public class Sine extends AbstractCurve {
     	calcAnchorPoint();
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
         if (pointsCache == null) {
             genPoints();
         }
@@ -344,7 +344,9 @@ public class Sine extends AbstractCurve {
         if (pointsCache.getSize() == 0) {
         	return;
         }
-        
+
+        g.setColor(getSuitableColor(drawAsSelected));
+
         short[] startPoint = pointsCache.getPoint(0);
         for (int i = 0; i < pointsCache.getSize() - 1; i++) {
             short[] endPoint = pointsCache.getPoint(i+1);

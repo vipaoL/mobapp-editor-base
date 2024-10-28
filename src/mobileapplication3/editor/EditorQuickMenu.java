@@ -5,46 +5,39 @@
  */
 package mobileapplication3.editor;
 
+import mobileapplication3.platform.Logger;
+import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.AbstractPopupPage;
+import mobileapplication3.ui.BackButton;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.IUIComponent;
+import mobileapplication3.ui.Keys;
 
 /**
  *
  * @author vipaol
  */
 public class EditorQuickMenu extends AbstractPopupPage {
-    EditorUI parent;
+    private final EditorUI parent;
 
     public EditorQuickMenu(EditorUI parent) {
-        super("Menu", parent);
+        super(parent.getFileName(), parent);
         this.parent = parent;
     }
 
     protected Button[] getActionButtons() {
         return new Button[] {
-            new Button("Back") {
-                public void buttonPressed() {
-                    close();
-                }
-            }
+            new BackButton(parent)
         };
     }
 
     protected IUIComponent initAndGetPageContent() {
-        ButtonCol buttons = (ButtonCol) new ButtonCol()
-                .enableScrolling(true, false)
-                .enableAnimations(false)
-                .trimHeight(true)
-                .setButtons(getButtons());
-        
-        return buttons;
+        return new ButtonCol(getButtons());
     }
 
     private Button[] getButtons() {
-        final EditorQuickMenu inst = this;
         boolean gameIncluded = false;
         try {
             Class.forName("mobileapplication3.game.GameplayCanvas");
@@ -55,19 +48,58 @@ public class EditorQuickMenu extends AbstractPopupPage {
             public void buttonPressed() {
                 RootContainer.setRootUIComponent(new mobileapplication3.game.GameplayCanvas(parent).loadLevel(parent.getData()));
             }
-        }.setIsActive(gameIncluded);
+        }.setBgColor(0x112211).setSelectedColor(0x115511).setIsActive(gameIncluded);
+        
+        Button saveButton = new Button("Save as \"" + parent.getFileName() + "\"") {
+            public void buttonPressed() {
+            	close();
+            	try {
+            		parent.saveToFile(parent.getFilePath());
+            		AutoSaveUI.deleteAutoSave(parent.getMode());
+            	} catch (Exception ex) {
+                    Logger.log(ex);
+                    Platform.showError(ex);
+                }
+            }
+        }.setBindedKeyCode(Keys.KEY_NUM8).setIsActive(parent.getFilePath() != null);
+        Button saveAsButton = new Button("Save as...") {
+            public void buttonPressed() {
+            	close();
+            	final int mode = parent.getMode();
+            	String path;
+            	if (mode == EditorUI.MODE_STRUCTURE) {
+            		path = EditorSettings.getStructsFolderPath();
+            	} else {
+            		path = EditorSettings.getLevelsFolderPath();
+            	}
+                parent.showPopup(new PathPicker(mode, parent).pickFolder(path, "Save as " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
+                    public void onComplete(final String path) {
+                        (new Thread(new Runnable() {
+                            public void run() {
+                                try {
+                                    Logger.log("Saving to " + path);
+                                    parent.saveToFile(path);
+                                    Logger.log("Saved!");
+                                    AutoSaveUI.deleteAutoSave(mode);
+                                    parent.setFilePath(path);
+                                    parent.closePopup();
+                                } catch (Exception ex) {
+                                    Logger.log(ex);
+                                    Platform.showError(ex);
+                                }
+                                repaint();
+                            }
+                        })).start();
+                    }
 
-        Button settingsButton = new Button("Settings") {
-            public void buttonPressed() {
-                showPopup(new SettingsUI(inst));
+                    public void onCancel() {
+                    	parent.closePopup();
+                    }
+                }));
             }
-        };
-        Button aboutButton = new Button("About") {
-            public void buttonPressed() {
-                showPopup(new About(inst));
-            }
-        };
-        Button exitButton = new Button("Open Menu") {
+        }.setBindedKeyCode(Keys.KEY_NUM9);
+
+        Button menuButton = new Button("Open Menu") {
             public void buttonPressed() {
                 RootContainer.setRootUIComponent(new MainMenu(RootContainer.getInst()));
             }
@@ -75,18 +107,9 @@ public class EditorQuickMenu extends AbstractPopupPage {
 
         Button[] buttons = null;
         if (parent.getMode() == EditorUI.MODE_STRUCTURE) {
-            buttons = new Button[]{
-                settingsButton,
-                aboutButton,
-                exitButton
-            };
+            buttons = new Button[]{saveButton, saveAsButton, menuButton};
         } else if (parent.getMode() == EditorUI.MODE_LEVEL) {
-            buttons = new Button[]{
-                levelTestButton,
-                settingsButton,
-                aboutButton,
-                exitButton
-            };
+            buttons = new Button[]{levelTestButton, saveButton, saveAsButton, menuButton};
         }
         return buttons;
     }

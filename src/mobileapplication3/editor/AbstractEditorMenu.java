@@ -3,6 +3,7 @@ package mobileapplication3.editor;
 import java.io.IOException;
 
 import mobileapplication3.platform.FileUtils;
+import mobileapplication3.platform.Mathh;
 import mobileapplication3.platform.ui.Font;
 import mobileapplication3.ui.AbstractPopupWindow;
 import mobileapplication3.ui.BackButton;
@@ -23,20 +24,20 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 	
 	private final static int LAYOUT_MINIMIZED = 1, LAYOUT_LIST_OF_NAMES = 2, LAYOUT_GRID = 3;
 
-	private int layout = LAYOUT_MINIMIZED;
 	private TextComponent title;
 	private ButtonCol buttons;
 	private Grid grid = null;
 	private ButtonRow backButtonComponent;
-	String[] files = null;
+	private String[] files = null;
 	private final IPopupFeedback parent;
+
+	private int layout = LAYOUT_MINIMIZED;
 
 	public AbstractEditorMenu(final IPopupFeedback parent, String titleStr) {
 		super(parent);
         this.parent = parent;
 
 		title = new TextComponent(titleStr);
-		//title.setFontSize(Font.SIZE_LARGE);
 		buttons = new ButtonCol();
 
 		switch (EditorSettings.getWhatToLoadAutomatically()) {
@@ -88,6 +89,7 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 		};
 
 		final BackButton backButton = new BackButton(parent);
+		backButtonComponent = new ButtonRow(new Button[]{backButton}).bindToSoftButtons();
 
 		switch (layout) {
 			case LAYOUT_MINIMIZED:
@@ -101,21 +103,19 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 						new ButtonStub(),
 						new BackButton(parent)
 				});
-				buttons.enableScrolling(true, false).setIsSelectionEnabled(true);
 				setComponents(new IUIComponent[]{title, buttons});
 				break;
 			case LAYOUT_LIST_OF_NAMES:
 				Button[] fileButtons = getList();
 				int topExtraButtons = 3;
-				int bottomExtraButtons = 1;
+				int bottomExtraButtons = 0;
 				Button[] btns = new Button[topExtraButtons + fileButtons.length + bottomExtraButtons];
 				btns[0] = createButton;
 				btns[1] = alwaysShowListSwitch;
 				btns[2] = showGridButton;
 				System.arraycopy(fileButtons, 0, btns, topExtraButtons, fileButtons.length);
-				btns[btns.length - 1] = backButton;
 				buttons.setButtons(btns);
-				setComponents(new IUIComponent[]{title, buttons});
+				setComponents(new IUIComponent[]{title, buttons, backButtonComponent});
 				break;
 			case LAYOUT_GRID:
 				UIComponent[] thumbnails = getGridContent();
@@ -127,7 +127,6 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 					cells[topExtraCells + i] = thumbnails[i];
 				}
 				grid = new Grid(cells);
-				backButtonComponent = new ButtonRow(new Button[]{backButton}).bindToSoftButtons();
 				setComponents(new IUIComponent[]{title, grid, backButtonComponent});
 				break;
 		}
@@ -137,38 +136,32 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 		title
 		        .setSize(w, TextComponent.HEIGHT_AUTO)
 		        .setPos(x0, y0, TOP | LEFT);
-//		buttons
-//				.setIsSelectionEnabled(true)
-//		        .setButtonsBgPadding(w/128)
-//		        .setSize(w/2, AbstractButtonSet.H_AUTO)
-//		        .setPos(x0 + w/2, (title.getBottomY() + y0 + h) * 2 / 3, VCENTER | HCENTER);
+
 		switch (layout) {
 			case LAYOUT_MINIMIZED:
 			    buttons
-			    		.trimHeight(true)
-			    		.setIsSelectionEnabled(true)
 			            .setButtonsBgPadding(w/128)
-			            .setSize(w/2, (h - title.getBottomY()))
+			            .setSize(w/2, (y0 + h - title.getBottomY()))
 			            .setPos(x0 + w/2, y0 + h, BOTTOM | HCENTER);
 			    break;
 			case LAYOUT_LIST_OF_NAMES:
+				backButtonComponent
+						.setSize(w, ButtonRow.H_AUTO)
+						.setPos(x0 + w/2, y0 + h, HCENTER | BOTTOM);
 			    buttons
-			    		.setIsSelectionEnabled(true)
 			            .setButtonsBgPadding(w/128)
-			            .setSize(w, h - title.getBottomY())
-			            .setPos(x0 + w/2, y0 + h, BOTTOM | HCENTER);
+			            .setSize(w, backButtonComponent.getTopY() - title.getBottomY())
+			            .setPos(x0 + w/2, title.getBottomY(), TOP | HCENTER);
 				break;
 			case LAYOUT_GRID:
 				backButtonComponent
 						.setSize(w, ButtonRow.H_AUTO)
 						.setPos(x0 + w/2, y0 + h, HCENTER | BOTTOM);
 				grid
-						.setCols(Math.max(1,w/Font.getDefaultFontHeight()/10))//.setCols(3)
+						.setCols(Mathh.constrain(1, w/Font.getDefaultFontHeight()/5, 3))//.setCols(3)
 						.setElementsPadding(w/128)
 						.setSize(w, backButtonComponent.getTopY() - title.getBottomY())
-						.setPos(x0 + w/2, title.getBottomY(), HCENTER | TOP);
-				break;
-			default:
+						.setPos(x0 + w/2, title.getBottomY(), TOP | HCENTER);
 				break;
 		}
         

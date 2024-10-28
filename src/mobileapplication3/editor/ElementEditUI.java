@@ -4,6 +4,7 @@ import mobileapplication3.editor.elements.Element;
 import mobileapplication3.editor.elements.EndPoint;
 import mobileapplication3.editor.elements.Element.PlacementStep;
 import mobileapplication3.ui.AbstractPopupPage;
+import mobileapplication3.ui.BackButton;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.IPopupFeedback;
@@ -13,7 +14,6 @@ public class ElementEditUI extends AbstractPopupPage {
 	
 	private Element element;
 	private Button[] rows;
-	private ButtonCol list;
 	private StructureBuilder sb;
 
 	public ElementEditUI(Element element, StructureBuilder sb, IPopupFeedback parent) {
@@ -24,11 +24,7 @@ public class ElementEditUI extends AbstractPopupPage {
 
 	protected Button[] getActionButtons() {
         return new Button[] {
-            new Button("OK") {
-                public void buttonPressed() {
-                    close();
-                }
-            }
+            new BackButton(feedback)
         };
     }
 
@@ -70,17 +66,14 @@ public class ElementEditUI extends AbstractPopupPage {
 			public void buttonPressed() {
 				showPopup(new AdvancedElementEditUI(element, sb, fb));
 			}
-		};
+		}.setBgColor(BG_COLOR_WARN);
 		
 		Button deleteButton = new Button("Delete element") {
 			public void buttonPressed() {
 				sb.remove(element);
 				close();
 			}
-		};
-		
-		advancedEditButton.setBgColor(0x222200);
-		deleteButton.setBgColor(0x550000);
+		}.setBgColor(BG_COLOR_DANGER);
 		
 		if (element instanceof EndPoint) {
 			cloneButton.setIsActive(false);
@@ -91,17 +84,11 @@ public class ElementEditUI extends AbstractPopupPage {
 		rows[rows.length - 2] = (advancedEditButton);
 		rows[rows.length - 1] = (deleteButton);
 		
-		list = (ButtonCol) new ButtonCol() {
+		return new ButtonCol(rows) {
 			public final void onSetBounds(int x0, int y0, int w, int h) {
 				setButtonsBgPadding(getBtnH()/16);
 				super.onSetBounds(x0, y0, w, h);
 			}
-		}
-				.enableScrolling(true, false)
-                .trimHeight(true)
-                .setButtons(rows)
-                .setIsSelectionEnabled(true)
-                .setIsSelectionVisible(true);
-		return list;
+		};
 	}
 }

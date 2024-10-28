@@ -10,6 +10,7 @@ import java.io.IOException;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Image;
 import mobileapplication3.ui.AbstractPopupPage;
+import mobileapplication3.ui.BackButton;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.ButtonCol;
 import mobileapplication3.ui.Container;
@@ -35,11 +36,7 @@ public class About extends AbstractPopupPage {
 
     protected Button[] getActionButtons() {
         return new Button[] {
-            new Button("Back") {
-                public void buttonPressed() {
-                    close();
-                }
-            }
+            new BackButton(feedback)
         };
     }
     
@@ -48,12 +45,12 @@ public class About extends AbstractPopupPage {
         String errorMessage = null;
 
         try {
-            logoImage = Image.createImage("/logo.png");
+            logoImage = Image.createImage("/editorlogo.png");
         } catch (IOException ex) {
             ex.printStackTrace();
             errorMessage = ex + " ";
             try {
-                logoImage = Image.createImage("/icon.png");
+                logoImage = Image.createImage("/editoricon.png");
             } catch (IOException e) {
                 e.printStackTrace();
                 errorMessage += e;
@@ -79,19 +76,15 @@ public class About extends AbstractPopupPage {
                 public void buttonPressed() {
                     Platform.platformRequest(LINK);
                 }
-            }.setBgColor(COLOR_ACCENT),
+            }.setBgColor(BG_COLOR_HIGHLIGHTED),
             new Button("Open TG channel " + LINK2_PREVIEW) {
                 public void buttonPressed() {
                     Platform.platformRequest(LINK2);
                 }
-            }.setBgColor(COLOR_ACCENT)
+            }.setBgColor(BG_COLOR_HIGHLIGHTED)
         };
         
-        final ButtonCol buttonsList = (ButtonCol) new ButtonCol()
-                .enableScrolling(true, true)
-                .enableAnimations(false)
-                .trimHeight(true)
-                .setButtons(settingsButtons);
+        final ButtonCol buttonsList = (ButtonCol) new ButtonCol(settingsButtons);
         
         Container container = new Container() {
             public void init() {
@@ -101,8 +94,8 @@ public class About extends AbstractPopupPage {
 
             protected void onSetBounds(int x0, int y0, int w, int h) {
                 buttonsList.setButtonsBgPadding(margin/8).setSize(w, ButtonCol.H_AUTO).setPos(x0, y0 + h, BOTTOM | LEFT);
-                int logoSide = Math.min(w, h - buttonsList.getHeight());
-                logo.setSize(logoSide, logoSide).setPos(x0 + w/2, (buttonsList.getTopY() + y0) / 2, HCENTER | VCENTER);
+                int logoSide = Math.min(w, h - buttonsList.getHeight() - margin);
+                logo.setSize(logoSide, logoSide).setPos(x0 + w/2, (y0 + buttonsList.getTopY() - margin) / 2, HCENTER | VCENTER);
             }
         };
 

@@ -5,8 +5,8 @@
  */
 package mobileapplication3.editor.elements;
 
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 /**
  *
@@ -39,7 +39,7 @@ public class EndPoint extends Element {
         return new PlacementStep[0];
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
         int r = 3;
         int prevColor = g.getColor();
         g.setColor(0xff0000);

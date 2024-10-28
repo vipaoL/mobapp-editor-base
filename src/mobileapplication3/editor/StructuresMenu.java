@@ -4,19 +4,19 @@ import java.io.IOException;
 import java.util.Vector;
 
 import mobileapplication3.editor.elements.Element;
-import mobileapplication3.platform.FileUtils;
+import mobileapplication3.platform.Logger;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.UIComponent;
 
-public class StructureEditorMenu extends AbstractEditorMenu {
+public class StructuresMenu extends AbstractEditorMenu {
 	
 	private String path = null;
 	
-	public StructureEditorMenu(final IPopupFeedback parent) {
-		super(parent, "Structure editor");
+	public StructuresMenu(final IPopupFeedback parent) {
+		super(parent, "Structures");
 	}
 	
 	private String getPath() {
@@ -34,12 +34,16 @@ public class StructureEditorMenu extends AbstractEditorMenu {
 		} catch (IOException e) {
 			Platform.showError(e);
 		}
+		Logger.log("getting grid content: " + files.length + " files");
 		try {
 			for (int i = 0; i < files.length; i++) {
-				String path = getPath() + FileUtils.SEP + files[i];
+				String path = getPath() + files[i];
 				try {
 					gridContentVector.addElement(new StructureViewerInteractive(MGStructs.readMGStruct(path), path));
-				} catch (Exception ignored) { }
+				} catch (Exception ex) {
+					Logger.log("Can't create StructureViewer:");
+					Logger.log(ex);
+				}
 			}
 		} catch (Exception e) {
 			Platform.showError(e);
@@ -48,6 +52,7 @@ public class StructureEditorMenu extends AbstractEditorMenu {
 		for (int i = 0; i < gridContentVector.size(); i++) {
 			gridContent[i] = (UIComponent) gridContentVector.elementAt(i);
 		}
+		Logger.log("Grid: " + gridContent.length + " cells");
 		return gridContent;
 	}
 	
@@ -95,7 +100,7 @@ public class StructureEditorMenu extends AbstractEditorMenu {
 		}
 		
 		public void openInEditor() {
-			StructureEditorMenu.this.openInEditor(elements, path);
+			StructuresMenu.this.openInEditor(elements, path);
 		}
 	}
 	

@@ -5,9 +5,13 @@
  */
 package mobileapplication3.editor;
 
+import java.io.IOException;
+
 import mobileapplication3.editor.elements.Element;
 import mobileapplication3.editor.elements.StartPoint;
+import mobileapplication3.platform.Logger;
 import mobileapplication3.platform.Platform;
+import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Font;
 import mobileapplication3.platform.ui.Graphics;
 import mobileapplication3.ui.AbstractButtonSet;
@@ -32,17 +36,14 @@ public class EditorUI extends Container {
     public final static int BTN_H = FONT_H*2;
     public final static int MODE_STRUCTURE = 1, MODE_LEVEL = 2;
 
-    private Button btnLoad, btnSave, btnPlace, btnList, zoomIn, zoomOut;
     private EditorCanvas editorCanvas = null;
-    private ButtonRow bottomButtonPanel = null, zoomPanel = null;
+    private ButtonRow bottomButtonPanel = null;
     private ButtonPanelHorizontal placementButtonPanel = null;
     private ButtonCol placedElementsList = null;
-    private ButtonComponent menuButton = null;
-    private PathPicker pathPicker = null;
     private StartPointWarning startPointWarning = null;
     private StructureBuilder elementsBuffer;
-    private boolean isAutoSaveEnabled = true;
-    
+
+    private boolean isAutoSaveEnabled = true;    
     private int mode;
     
     public EditorUI(int editorMode) {
@@ -50,7 +51,7 @@ public class EditorUI extends Container {
     	elementsBuffer = new StructureBuilder(mode) {
             public void onUpdate() {
                 initListPanel();
-                saveToRMS();
+                saveToAutoSave();
             }
         };
 
@@ -61,32 +62,77 @@ public class EditorUI extends Container {
             
             initStartPointWarning();
 
-            initZoomPanel();
-
             initPlacementPanel();
-
-            initSettingsButton();
             
             initListPanel();
-
-            initPathPicker();
             
         } catch(Exception ex) {
-            ex.printStackTrace();
+            Logger.log(ex);
             Platform.showError(ex);
         }
 
-    	setComponents();
+    	setComponents(new IUIComponent[]{editorCanvas, startPointWarning, placementButtonPanel, placedElementsList, bottomButtonPanel});
 	}
     
     public EditorUI(int editorMode, Element[] elements, String path) {
 		this(editorMode);
 		elementsBuffer.setElements(elements);
+		elementsBuffer.setFilePath(path);
 	}
 
     public void init() {
     	isAutoSaveEnabled = EditorSettings.getAutoSaveEnabled(true);
     	super.init();
+    }
+
+    public void onSetBounds(int x0, int y0, int w, int h) {
+        bottomButtonPanel
+        		.setButtonsBgPadding(BTN_H/16)
+                .setSize(w, BTN_H)
+                .setPos(x0, y0 + h, BOTTOM | LEFT);
+        editorCanvas
+                .setSize(w, h - bottomButtonPanel.h)
+                .setPos(x0, y0, TOP | LEFT);
+        placementButtonPanel
+                .setSizes(w, ButtonPanelHorizontal.H_AUTO, BTN_H)
+                .setPos(x0, y0 + h - bottomButtonPanel.h, BOTTOM | LEFT);
+        placedElementsList
+                .setSizes(w/3, bottomButtonPanel.getTopY() - y0 - BTN_H / 4, FONT_H * 3)
+                .setPos(x0 + w, y0 + h - bottomButtonPanel.h, RIGHT | BOTTOM);
+        if (startPointWarning != null) {
+        	startPointWarning
+	        		.setSize(startPointWarning.getOptimalW(w/3), startPointWarning.getOptimalH(bottomButtonPanel.getTopY() - y0))
+	        		.setPos(bottomButtonPanel.getLeftX(), bottomButtonPanel.getTopY(), LEFT | BOTTOM);
+        }
+    }
+    
+    public void paint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
+        if (startPointWarning != null) {
+            startPointWarning.setVisible(!StartPoint.checkStartPoint(elementsBuffer.getElementsAsArray()));
+        }
+    	super.paint(g, x0, y0, w, h, forceInactive);
+    }
+
+    public String getFilePath() {
+    	return elementsBuffer.getFilePath();
+    }
+    
+    public void setFilePath(String path) {
+    	elementsBuffer.setFilePath(path);
+    }
+
+    public String getFileName() {
+    	String path = getFilePath();
+    	String name = "Unnamed file";
+    	try {
+	    	if (path != null) {
+	    		String[] tmp = Utils.split(path, "/");
+	    		name = tmp[tmp.length - 1];
+	    	}
+    	} catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+    	return name;
     }
 
     public short[][] getData() {
@@ -96,15 +142,19 @@ public class EditorUI extends Container {
     public int getMode() {
         return mode;
     }
+
+    public void saveToFile(String path) throws SecurityException, IOException {
+    	elementsBuffer.saveToFile(path);
+    }
     
-    private void saveToRMS() {
+    private void saveToAutoSave() {
     	if (isAutoSaveEnabled && elementsBuffer != null) {
     		new Thread(new Runnable() {
 				public void run() {
 					try {
-						AutoSave.autoSaveWrite(elementsBuffer, mode);
+						AutoSaveUI.autoSaveWrite(elementsBuffer, elementsBuffer.getFilePath(), mode);
 					} catch (Exception ex) {
-						ex.printStackTrace();
+						Logger.log(ex);
 						Platform.showError(ex);
 					}
 				}
@@ -112,123 +162,50 @@ public class EditorUI extends Container {
     	}
 	}
     
-    private void setComponents() {
-    	setComponents(new IUIComponent[]{editorCanvas, startPointWarning, zoomPanel, placementButtonPanel, menuButton, placedElementsList, bottomButtonPanel, pathPicker});
-    }
-    
-    private EditorQuickMenu getMenuObject() {
-        return new EditorQuickMenu(this);
-    }
-    
-    private ElementEditUI getElementEditScreenObject(Element element, StructureBuilder sb) {
-        return new ElementEditUI(element, sb, this);
-    }
-    
     private void initEditorCanvas() {
         editorCanvas = (EditorCanvas) new EditorCanvas(elementsBuffer);
     }
     
     private void initBottomPanel() {
-        btnPlace = new Button("Place") {
+    	Button placeButton = new Button("Place") {
             public void buttonPressed() {
                 placedElementsList.setVisible(false);
                 placementButtonPanel.toggleIsVisible();
                 placementButtonPanel.setFocused(placementButtonPanel.getIsVisible());
             }
         };
-        
-        btnLoad = new Button("Open") {
+        Button menuButton = new Button("Menu") {
             public void buttonPressed() {
-                pathPicker.pickFile(EditorSettings.getStructsFolderPath(), "Open " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
-                    public void onComplete(final String path) {
-                        (new Thread(new Runnable() {
-                            public void run() {
-                                System.out.println("Open: " + path);
-                                elementsBuffer.loadFile(path);
-                                System.out.println("Loaded!");
-                                setIsPathPickerVisible(false);
-                                repaint();
-                            }
-                        })).start();
-                    }
-
-                    public void onCancel() {
-                        setIsPathPickerVisible(false);
-                    }
-                });
-                setIsPathPickerVisible(true);
+                showPopup(new EditorQuickMenu(EditorUI.this));
             }
-        }.setBindedKeyCode(Keys.KEY_NUM8);
-        
-        btnSave = new Button("Save") {
+        }.setBindedKeyCode(Keys.KEY_NUM0);
+        Button zoomInButton = new Button("+") {
             public void buttonPressed() {
-            	String path;
-            	if (mode == MODE_STRUCTURE) {
-            		path = EditorSettings.getStructsFolderPath();
-            	} else {
-            		path = EditorSettings.getLevelsFolderPath();
-            	}
-                pathPicker.pickFolder(path, "Save as " + PathPicker.QUESTION_REPLACE_WITH_PATH + " ?", new PathPicker.Feedback() {
-                    public void onComplete(final String path) {
-                        (new Thread(new Runnable() {
-                            public void run() {
-                                try {
-                                    System.out.println("Save: " + path);
-                                    elementsBuffer.saveToFile(path);
-                                    System.out.println("Saved!");
-                                    setIsPathPickerVisible(false);
-                                    AutoSave.deleteAutoSave(mode);
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                    Platform.showError(ex);
-                                }
-                                repaint();
-                            }
-                        })).start();
-                    }
-
-                    public void onCancel() {
-                        setIsPathPickerVisible(false);
-                    }
-                });
-                setIsPathPickerVisible(true);
+                editorCanvas.zoomIn();
             }
-        }.setBindedKeyCode(Keys.KEY_NUM9);
-        
-        btnList = new Button("Edit") {
+        }.setBindedKeyCode(Keys.KEY_STAR);
+        Button zoomOutButton = new Button("-") {
+            public void buttonPressed() {
+                editorCanvas.zoomOut();
+            }
+        }.setBindedKeyCode(Keys.KEY_POUND);
+        Button editButton = new Button("Edit") {
             public void buttonPressed() {
                 placementButtonPanel.setVisible(false);
                 placedElementsList.toggleIsVisible();
                 placedElementsList.setFocused(placedElementsList.getIsVisible());
             }
         };
-        
-        Button[] bottomButtons = {btnPlace, btnLoad, btnSave, btnList};
-        bottomButtonPanel = (ButtonRow) new ButtonRow().bindToSoftButtons(0, 3).setButtons(bottomButtons).setButtonsBgColor(0x303030);
+
+		Button[] bottomButtons = {placeButton, menuButton, zoomInButton, zoomOutButton, editButton};
+        bottomButtonPanel = (ButtonRow) new ButtonRow().setButtons(bottomButtons).setButtonsBgColor(BG_COLOR_HIGHLIGHTED);
+        bottomButtonPanel.bindToSoftButtons();
     }
     
     private void initStartPointWarning() {
     	if (mode == MODE_STRUCTURE) {
     		startPointWarning = (StartPointWarning) new StartPointWarning().setVisible(false);
     	}
-    }
-    
-    private void initZoomPanel() {
-        zoomIn = new Button("+") {
-            public void buttonPressed() {
-                editorCanvas.zoomIn();
-            }
-        }.setBindedKeyCode(Keys.KEY_STAR);
-        
-        zoomOut = new Button("-") {
-            public void buttonPressed() {
-                editorCanvas.zoomOut();
-            }
-        }.setBindedKeyCode(Keys.KEY_POUND);
-        
-        Button[] zoomPanelButtons = {zoomIn, zoomOut};
-        zoomPanel = (ButtonRow) new ButtonRow(zoomPanelButtons)
-        		.setButtonsBgColor(0x000020);
     }
     
     private void initPlacementPanel() {
@@ -292,31 +269,19 @@ public class EditorUI extends Container {
         placementButtonPanel.setIsSelectionEnabled(true);
         placementButtonPanel.setVisible(false);
     }
-    
-    private void initSettingsButton() {
-    	menuButton = new ButtonComponent(new Button("Menu") {
-            public void buttonPressed() {
-                showPopup(getMenuObject());
-            }
-        }).setBindedKeyCode(Keys.KEY_NUM0);
-    }
 
     private void initListPanel() {
         Element[] elements = elementsBuffer.getElementsAsArray();
-        System.out.println("updating, " + elements.length);
+        Logger.log("updating, " + elements.length + " elements");
         Button[] listButtons = new Button[elements.length];
         for (int i = 0; i < elements.length; i++) {
-            //final int o = i;
             final Element element = elements[i];
             listButtons[i] = new Button(elements[i].getName()) {
-                public void buttonPressed() {
-                    //System.out.println(o + "selected");
-                }
+                public void buttonPressed() { }
                 public void buttonPressedSelected() {
                 	placedElementsList.setVisible(false);
                 	placementButtonPanel.setVisible(false);
-                    showPopup(getElementEditScreenObject(element, elementsBuffer));
-                    //elementsBuffer.remove(o);
+                    showPopup(new ElementEditUI(element, elementsBuffer, EditorUI.this));
                 }
             };
         }
@@ -331,72 +296,12 @@ public class EditorUI extends Container {
         }
         
         placedElementsList
-		        .enableScrolling(true, true)
-		        .setIsSelectionEnabled(true)
+        		.setButtons(listButtons)
 		        .setIsSelectionVisible(true)
-		        .setVisible(false)
-		        .setBgColor(COLOR_TRANSPARENT);
-        placedElementsList.setButtons(listButtons);
+		        .setVisible(false);
     }
     
-    private void initPathPicker() {
-        pathPicker = new PathPicker();
-        pathPicker.setVisible(false);
-    }
-    
-    private void setIsPathPickerVisible(boolean b) {
-        if (b) {
-            pathPicker.setBgImage(getCapture());
-        }
-        pathPicker.setVisible(b);
-        editorCanvas.setVisible(!b);
-        bottomButtonPanel.setVisible(!b);
-        zoomPanel.setVisible(!b);
-        menuButton.setVisible(!b);
-        refreshFocusedComponents();
-    }
-
-    public void onSetBounds(int x0, int y0, int w, int h) {
-        bottomButtonPanel
-                .setSize(w, BTN_H)
-                .setPos(x0, y0 + h, BOTTOM | LEFT);
-        editorCanvas
-                .setSize(w, h - bottomButtonPanel.h)
-                .setPos(x0, y0, TOP | LEFT);
-        zoomPanel
-                .setSize(w/2, BTN_H)
-                .setPos(x0 + w/2, y0 + h - bottomButtonPanel.h, BOTTOM | LEFT);
-        placementButtonPanel
-                .setSizes(w, ButtonPanelHorizontal.H_AUTO, BTN_H)
-                .setPos(x0, y0 + h - bottomButtonPanel.h, BOTTOM | LEFT);
-        menuButton
-                .setSize(ButtonComponent.W_AUTO, ButtonComponent.H_AUTO)
-                .setPos(x0 + w, y0, TOP | RIGHT);
-        placedElementsList
-                .setSizes(w/3, bottomButtonPanel.getTopY() - y0 - BTN_H / 4, FONT_H * 3)
-                .setPos(x0 + w, y0 + h - bottomButtonPanel.h, RIGHT | BOTTOM);
-        pathPicker
-                .setSizes(w, h, BTN_H)
-                .setPos(x0, y0);
-        if (startPointWarning != null) {
-        	startPointWarning
-	        		.setSize(startPointWarning.getOptimalW(zoomPanel.getLeftX() - x0), startPointWarning.getOptimalH(bottomButtonPanel.getTopY() - y0))
-	        		.setPos(bottomButtonPanel.getLeftX(), bottomButtonPanel.getTopY(), LEFT | BOTTOM);
-        }
-    }
-    
-    public void paint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
-        if (startPointWarning != null) {
-            startPointWarning.setVisible(!StartPoint.checkStartPoint(elementsBuffer.getElementsAsArray()));
-        }
-    	super.paint(g, x0, y0, w, h, forceInactive);
-    }
-    
-    public boolean keyPressed(int keyCode, int count) {
-    	return super.keyPressed(keyCode, count);
-    }
-    
-    public void moveToZeros() {
+    private void moveToZeros() {
     	StartPoint.moveToZeros(elementsBuffer.getElementsAsArray());
     }
 

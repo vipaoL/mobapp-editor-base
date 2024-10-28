@@ -5,8 +5,8 @@
  */
 package mobileapplication3.editor.elements;
 
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 /**
  *
@@ -39,10 +39,14 @@ public class LevelStart extends Element {
         return new PlacementStep[0];
     }
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
     	int r = 3;
         int prevColor = g.getColor();
-        g.setColor(0x00ff00);
+        if (!drawAsSelected) {
+        	g.setColor(0x00ff00);
+        } else {
+        	g.setColor(getSuitableColor(drawAsSelected));
+        }
         g.fillArc(xToPX(x, zoomOut, offsetX) - r, yToPX(y, zoomOut, offsetY) - r, r*2, r*2, 0, 360);
         g.setColor(prevColor);
     }
@@ -111,11 +115,5 @@ public class LevelStart extends Element {
 	}
 
 	public void recalcCalculatedArgs() { }
-	
-	int carbodyLength = 240;
-    int carbodyHeight = 40;
-    int wr = 40;
-    int carX = 0 - (carbodyLength / 2 - wr);
-    int carY = 0 - wr / 2 * 3 - 2;
     
 }

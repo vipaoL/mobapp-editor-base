@@ -23,7 +23,6 @@ public class EditorCanvas extends StructureViewerComponent {
     private StructureBuilder structureBuilder;
     private Car car = new Car();
     private int colBg = 0x000000;
-    private int colSelected = 0xaaffff;
     private int cursorX, cursorY = 0;
     private int keyRepeats = 0;
     public int selectedElement = 0;
@@ -82,17 +81,7 @@ public class EditorCanvas extends StructureViewerComponent {
     protected void drawElements(Graphics g, int x0, int y0, Element[] elements) {
         for (int i = 0; i < elements.length; i++) {
         	try {
-	        	Element element = elements[i];
-	            if (i == selectedElement) {
-	                g.setColor(colSelected);
-	            } else {
-	            	if (!element.isBody()) {
-	            		g.setColor(colLandscape);
-	            	} else {
-	            		g.setColor(colBody);
-	            	}
-	            }
-	            element.paint(g, zoomOut, x0 + offsetX, y0 + offsetY, zoomOut > zoomoutThresholdMacroMode);
+	        	elements[i].paint(g, zoomOut, x0 + offsetX, y0 + offsetY, zoomOut > zoomoutThresholdMacroMode, i == selectedElement);
         	} catch (Exception ex) { }
         }
     }
@@ -142,42 +131,14 @@ public class EditorCanvas extends StructureViewerComponent {
         }
         
         int minStep = count * count;
-        switch (RootContainer.getAction(keyCode)) {
-            case Keys.UP:
-                cursorY -= Math.max(minStep, zoomOut / 1000);
-                break;
-            case Keys.DOWN:
-                cursorY += Math.max(minStep, zoomOut / 1000);
-                break;
-            case Keys.LEFT:
-                cursorX -= Math.max(minStep, zoomOut / 1000);
-                break;
-            case Keys.RIGHT:
-                cursorX += Math.max(minStep, zoomOut / 1000);
-                break;
+        int step = Math.max(minStep, zoomOut / 1000);
+		switch (RootContainer.getAction(keyCode)) {
             case Keys.FIRE:
                 structureBuilder.handleNextPoint((short) cursorX, (short) cursorY, false);
                 break;
             default:
-                switch (keyCode) {
-                    /*case Canvas.KEY_NUM1:
-                        cursorX--;
-                        cursorY--;
-                        break;
-                    case Canvas.KEY_NUM3:
-                        cursorX++;
-                        cursorY--;
-                        break;
-                    case Canvas.KEY_NUM7:
-                        cursorX--;
-                        cursorY++;
-                        break;
-                    case Canvas.KEY_NUM9:
-                        cursorX++;
-                        cursorY++;
-                        break;*/
-                    default:
-                        return false;
+            	if (!moveCursorByKeyboard(keyCode, step)) {
+                	return false;
                 }
         }
         pointerHandler.onCursorMove();
@@ -186,50 +147,54 @@ public class EditorCanvas extends StructureViewerComponent {
     }
     
     public boolean handleKeyRepeated(int keyCode, int pressedCount) {
-        // TODO: rewrite to cursormove
         int minStep = Math.max(zoomOut / 100, 1);
         int a = keyRepeats;
         int step = (minStep + a) * pressedCount;
-        switch (RootContainer.getAction(keyCode)) {
-            case Keys.UP:
-                cursorY -= step;
-                break;
-            case Keys.DOWN:
-                cursorY += step;
-                break;
-            case Keys.LEFT:
-                cursorX -= step;
-                break;
-            case Keys.RIGHT:
-                cursorX += step;
-                break;
-            case Keys.FIRE:
-                break;
-            default:
-                switch (keyCode) {
-                    /*case Canvas.KEY_NUM1:
-                        cursorX -= a;
-                        cursorY -= a;
-                        break;
-                    case Canvas.KEY_NUM3:
-                        cursorX += a;
-                        cursorY -= a;
-                        break;
-                    case Canvas.KEY_NUM7:
-                        cursorX -= a;
-                        cursorY += a;
-                        break;
-                    case Canvas.KEY_NUM9:
-                        cursorX += a;
-                        cursorY += a;
-                        break;*/
-                    default:
-                        return false;
-                }
+        if (!moveCursorByKeyboard(keyCode, step)) {
+        	return false;
         }
         pointerHandler.onCursorMove();
         keyRepeats = Math.min(100, keyRepeats + 1);
         return true;
+    }
+    
+    private boolean moveCursorByKeyboard(int keyCode, int step) {
+    	switch (RootContainer.getAction(keyCode)) {
+	        case Keys.UP:
+	            cursorY -= step;
+	            break;
+	        case Keys.DOWN:
+	            cursorY += step;
+	            break;
+	        case Keys.LEFT:
+	            cursorX -= step;
+	            break;
+	        case Keys.RIGHT:
+	            cursorX += step;
+	            break;
+	        default:
+	            switch (keyCode) {
+	                case Keys.KEY_NUM1:
+	                	cursorX -= step;
+	                    cursorY -= step;
+	                    break;
+	                case Keys.KEY_NUM3:
+	                	cursorX += step;
+	                    cursorY -= step;
+	                    break;
+	                case Keys.KEY_NUM7:
+	                	cursorX -= step;
+	                    cursorY += step;
+	                    break;
+	                case Keys.KEY_NUM9:
+	                	cursorX += step;
+	                    cursorY += step;
+	                    break;
+	                default:
+	                    return false;
+	            }
+	    }
+    	return true;
     }
 
     public int getCursorX() {

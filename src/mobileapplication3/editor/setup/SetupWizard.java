@@ -44,7 +44,8 @@ public class SetupWizard extends Container {
             new Page1(new Button[]{getNewNextButton()}, pageSwitcher),
             new Page2(new Button[]{getNewPrevButton(), getNewNextButton()}, pageSwitcher),
             new Page3(new Button[]{getNewPrevButton(), getNewNextButton()}, pageSwitcher),
-            new Page4(new Button[]{getNewPrevButton(), getNewNextButton()}, pageSwitcher)
+            new Page4(new Button[]{getNewPrevButton(), getNewNextButton()}, pageSwitcher),
+            new Page5(new Button[]{getNewPrevButton(), getNewNextButton()}, pageSwitcher)
         };
     }
     

@@ -5,13 +5,9 @@
  */
 package mobileapplication3.editor.setup;
 
-import java.io.IOException;
-
-import mobileapplication3.platform.ui.Image;
+import mobileapplication3.editor.About;
 import mobileapplication3.ui.Button;
 import mobileapplication3.ui.IUIComponent;
-import mobileapplication3.ui.ImageComponent;
-import mobileapplication3.ui.TextComponent;
 
 /**
  *
@@ -20,7 +16,7 @@ import mobileapplication3.ui.TextComponent;
 public class Page1 extends AbstractSetupWizardPage {
     
     public Page1(Button[] buttons, SetupWizard.Feedback feedback) {
-        super("Welcome to the structure editor for mobapp-game", buttons, feedback);
+        super("Welcome to the editor for mobapp-game", buttons, feedback);
     }
     
     public void initOnFirstShow() {
@@ -28,29 +24,7 @@ public class Page1 extends AbstractSetupWizardPage {
     }
 
     protected IUIComponent initAndGetPageContent() {
-    	Image logo = null;
-    	String errorMessage = null;
-    	
-        try {
-        	logo = Image.createImage("/logo.png");
-		} catch (IOException ex) {
-			ex.printStackTrace();
-			errorMessage = ex + " ";
-			try {
-	        	logo = Image.createImage("/icon.png");
-			} catch (IOException e) {
-				e.printStackTrace();
-				errorMessage += e;
-			}
-		}
-        
-        if (logo != null) {
-        	return new ImageComponent(logo).setBgColor(COLOR_ACCENT_MUTED);
-        } else {
-			return new TextComponent("Could not load logo image: " + errorMessage)
-					.setFontColor(0xff0000)
-					.setBgColor(0);
-		}
+    	return About.getAppLogo();
     }
 
     public void setPageContentBounds(IUIComponent pageContent, int x0, int y0, int w, int h) {

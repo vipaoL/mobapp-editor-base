@@ -10,8 +10,7 @@ import mobileapplication3.ui.UIComponent;
 public class StructureViewerComponent extends UIComponent {
 	
 	protected static final int MIN_ZOOM_OUT = 8, MAX_ZOOM_OUT = 200000;
-	
-	protected int colLandscape = 0x4444ff, colBody = 0xffffff;
+
     protected int offsetX, offsetY, zoomOut = 8192;
 	protected short start, end;
 	
@@ -55,13 +54,7 @@ public class StructureViewerComponent extends UIComponent {
 	protected void drawElements(Graphics g, int x0, int y0, Element[] elements) {
         for (int i = 0; i < elements.length; i++) {
         	try {
-	        	Element element = elements[i];
-            	if (!element.isBody()) {
-            		g.setColor(colLandscape);
-            	} else {
-            		g.setColor(colBody);
-            	}
-	            element.paint(g, zoomOut, x0 + offsetX, y0 + offsetY, true);
+	        	elements[i].paint(g, zoomOut, x0 + offsetX, y0 + offsetY, true, false);
         	} catch (Exception ex) { }
         }
     }

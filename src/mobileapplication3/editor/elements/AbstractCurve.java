@@ -21,15 +21,16 @@ public abstract class AbstractCurve extends Element {
     
     abstract void genPoints();
     
-    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
         if (pointsCache == null) {
             genPoints();
         }
-        
+
         if (pointsCache.getSize() == 0) {
         	return;
         }
-        
+
+        g.setColor(getSuitableColor(drawAsSelected));
         short[] startPoint = pointsCache.getPoint(0);
         for (int i = 0; i < pointsCache.getSize() - 1; i++) {
             short[] endPoint = pointsCache.getPoint(i+1);

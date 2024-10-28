@@ -10,13 +10,15 @@ import mobileapplication3.platform.Utils;
 
 public class MGStructs {
 	public static Element[] readMGStruct(String path) {
+		Logger.log(path);
         return readMGStruct(FileUtils.fileToDataInputStream(path));
     }
     
     public static Element[] readMGStruct(DataInputStream dis) {
         try {
             short fileVer = dis.readShort();
-            Logger.log("mgstruct v" + fileVer);
+            Logger.log("");
+            Logger.log("Reading mgstruct v" + fileVer + " file");
             short elementsCount = dis.readShort();
             Logger.log("elements count: " + elementsCount);
             Element[] elements = new Element[elementsCount];
@@ -29,7 +31,7 @@ public class MGStructs {
             }
             return elements;
         } catch (NullPointerException ex) {
-        	Logger.log("readMGStruct: caught NPE. nothing to read");
+        	Logger.log("nothing to read (null)");
         	return null;
         } catch (IOException ex) {
             Logger.log(ex);
@@ -38,10 +40,14 @@ public class MGStructs {
     }
     
     public static Element readNextElement(DataInputStream is) {
-        Logger.log("reading next element...");
+        String logLine = "";
+        Logger.log(logLine);
         try {
             short id = is.readShort();
-            System.out.print("id" + id + " ");
+            String prevLogLine = logLine;
+            logLine += "id" + id;
+            Logger.logReplaceLast(prevLogLine, logLine);
+            prevLogLine = logLine;
             if (id == 0) {
                 Logger.log("id0 is EOF mark. stopping");
                 return null;
@@ -57,7 +63,8 @@ public class MGStructs {
                 args[i] = is.readShort();
             }
             
-            Logger.log(Utils.shortArrayToString(args));
+            logLine += Utils.shortArrayToString(args);
+            Logger.logReplaceLast(prevLogLine, logLine);
             
             element.setArgs(args);
             return element;

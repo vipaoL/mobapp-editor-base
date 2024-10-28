@@ -1,8 +1,8 @@
 package mobileapplication3.editor.elements;
 
 import mobileapplication3.platform.Mathh;
-import mobileapplication3.platform.Property;
 import mobileapplication3.platform.ui.Graphics;
+import mobileapplication3.ui.Property;
 
 public class LevelFinish extends Element {
 	
@@ -52,10 +52,14 @@ public class LevelFinish extends Element {
 		return new PlacementStep[0];
 	}
 
-	public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness) {
+	public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
 		int dx = (int) (l * Mathh.cos(angle) / 1000);
         int dy = (int) (l * Mathh.sin(angle) / 1000);
-        g.setColor(0, 255, 0);
+        if (!drawAsSelected) {
+        	g.setColor(0x00ff00);
+        } else {
+        	g.setColor(getSuitableColor(drawAsSelected));
+        }
 		g.drawLine(
 				xToPX(x - dx/2, zoomOut, offsetX),
                 yToPX(y - dy/2, zoomOut, offsetY),
