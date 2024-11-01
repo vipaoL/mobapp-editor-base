@@ -10,6 +10,7 @@ import java.io.IOException;
 import mobileapplication3.editor.elements.Element;
 import mobileapplication3.editor.elements.StartPoint;
 import mobileapplication3.platform.Logger;
+import mobileapplication3.platform.Mathh;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.Utils;
 import mobileapplication3.platform.ui.Font;
@@ -211,49 +212,49 @@ public class EditorUI extends Container {
     private void initPlacementPanel() {
         Button btnLine = new Button("Line") {
             public void buttonPressed() {
-                elementsBuffer.place(Element.LINE, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+                place(Element.LINE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
         
         Button btnCircle = new Button("Circle") {
             public void buttonPressed() {
-                elementsBuffer.place(Element.CIRCLE, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+                place(Element.CIRCLE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
         
         Button btnSine = new Button("Sine") {
             public void buttonPressed() {
-                elementsBuffer.place(Element.SINE, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+                place(Element.SINE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
         
         Button btnBrLine = new Button("Broken\nline") {
             public void buttonPressed() {
-                elementsBuffer.place(Element.BROKEN_LINE, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+                place(Element.BROKEN_LINE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
         
         Button btnBrCircle = new Button("Broken\ncircle") {
             public void buttonPressed() {
-                elementsBuffer.place(Element.BROKEN_CIRCLE, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+                place(Element.BROKEN_CIRCLE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
         
         Button btnAccel = new Button("Accele-\nrator") {
             public void buttonPressed() {
-                elementsBuffer.place(Element.ACCELERATOR, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+                place(Element.ACCELERATOR, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
         
         Button btnFinish = new Button("Level-\nFinish") {
             public void buttonPressed() {
-                elementsBuffer.place(Element.LEVEL_FINISH, (short) editorCanvas.getCursorX(), (short) editorCanvas.getCursorY());
+            	place(Element.LEVEL_FINISH, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
@@ -268,6 +269,11 @@ public class EditorUI extends Container {
                 .setBtnsInRowCount(BTNS_IN_ROW);
         placementButtonPanel.setIsSelectionEnabled(true);
         placementButtonPanel.setVisible(false);
+    }
+    
+    private void place(int id, int x, int y) {
+    	elementsBuffer.place((short) id, (short) x, (short) y);
+    	placedElementsList.setSelected(placedElementsList.getButtonCount() - 1);
     }
 
     private void initListPanel() {
@@ -297,6 +303,7 @@ public class EditorUI extends Container {
         
         placedElementsList
         		.setButtons(listButtons)
+        		.setSelected(Mathh.constrain(0, placedElementsList.getSelected(), listButtons.length - 1))
 		        .setIsSelectionVisible(true)
 		        .setVisible(false);
     }

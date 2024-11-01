@@ -42,15 +42,13 @@ public abstract class StructureBuilder {
 	}
     
     public void place(short id, short x, short y) throws IllegalArgumentException {
-    	if (placingNow != null) {
-    		onUpdate();
-    	}
     	isEditing = false;
         placingNow = Element.createTypedInstance(id);
         Logger.log("Placing " + id);
         nextPointHandler = new NextPointHandler();
         handleNextPoint(x, y, false);
         add(placingNow);
+        onUpdate();
         handleNextPoint(x, y, true);
     }
     
@@ -80,7 +78,7 @@ public abstract class StructureBuilder {
         
         nextPointHandler.handleNextPoint(x, y);
         
-        if (nextPointHandler.step == placingNow.getStepsToPlace() || isEditing) {
+        if (nextPointHandler.step >= placingNow.getStepsToPlace() || isEditing) {
             if (!isPreview) {
             	if (placingNow.getID() != Element.END_POINT) {
             		recalcEndPoint();
@@ -149,7 +147,6 @@ public abstract class StructureBuilder {
             }
             setElements(elements);
             this.path = path;
-            onUpdate();
         } catch(Exception ex) {
             Logger.log(ex);
         }
@@ -196,14 +193,18 @@ public abstract class StructureBuilder {
     }
     
     public void remove(Element e) {
+    	remove(findInBuffer(e));
+    }
+    
+    public int findInBuffer(Element e) {
     	Element[] elements = getElementsAsArray();
     	for (int i = 0; i < elements.length; i++) {
 			if (elements[i] != null && elements[i].equals(e)) {
-				remove(i);
-				break;
+				return i;
 			}
 			
 		}
+    	throw new IllegalArgumentException("Element " + e + " not found in buffer");
     }
     
     public void recalcEndPoint() {
