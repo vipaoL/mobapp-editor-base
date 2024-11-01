@@ -115,7 +115,7 @@ public class EditorCanvas extends StructureViewerComponent {
 
     public boolean handlePointerClicked(int x, int y) {
         pointerHandler.dragged = false;
-        pointerHandler.handlePointerReleased(x, y);
+        pointerHandler.handlePointerClicked(x, y);
         return true;
     }
 
@@ -268,6 +268,8 @@ public class EditorCanvas extends StructureViewerComponent {
             prevOffsetY = offsetY;
             prevCursorX = cursorX;
             prevCursorY = cursorY;
+
+            dragged = false;
         }
 
         void handlePointerDragged(int x, int y) {
@@ -284,10 +286,10 @@ public class EditorCanvas extends StructureViewerComponent {
             cursorY = prevCursorY + dy * zoomOut / 1000;
             
             onCursorMove();
-            dragged = (dx != 0 || dy != 0);
+            dragged = dragged || (dx != 0 || dy != 0);
         }
 
-        void handlePointerReleased(int x, int y) {
+        void handlePointerClicked(int x, int y) {
             if (!isVisible) {
                 return;
             }
@@ -295,7 +297,6 @@ public class EditorCanvas extends StructureViewerComponent {
             if (!dragged) {
                 structureBuilder.handleNextPoint((short) cursorX, (short) cursorY, false);
             }
-            dragged = false;
         }
         
         void onCursorMove() {
