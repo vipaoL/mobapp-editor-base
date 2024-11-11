@@ -258,12 +258,19 @@ public class EditorUI extends Container {
                 placementButtonPanel.setVisible(false);
             }
         };
+
+        Button btnTrampoline = new Button("Trampo-\nline") {
+            public void buttonPressed() {
+            	place(Element.TRAMPOLINE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
+                placementButtonPanel.setVisible(false);
+            }
+        };
         
         Button[] placementButtons;
         if (mode == MODE_STRUCTURE) {
-        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel};
+        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline};
         } else {
-        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnFinish};
+        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline, btnFinish};
         }
         placementButtonPanel = new ButtonPanelHorizontal(placementButtons)
                 .setBtnsInRowCount(BTNS_IN_ROW);
