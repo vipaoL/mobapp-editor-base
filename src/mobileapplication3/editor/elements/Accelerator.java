@@ -197,7 +197,7 @@ public class Accelerator extends Element {
 					}
 					
 					public short getMaxValue() {
-						return (short) (l/2);
+						return (short) (l*2);
 					}
     			},
     			new Property("Angle", true) {

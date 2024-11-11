@@ -151,7 +151,7 @@ public class BrokenLine extends Line {
 					}
 					
 					public short getMaxValue() {
-						return (short) (platformLength / 2);
+						return (short) (platformLength * 2);
 					}
     			},
     			new Property("Platform length", true) {
