@@ -27,9 +27,10 @@ public abstract class Element {
     public static final short TRAMPOLINE = 8;
     public static final short LEVEL_START = 9;
     public static final short LEVEL_FINISH = 10;
+    public static final short LAVA = 11;
     
-    public static final int[] ARGS_NUMBER = {0, /*1*/2, /*2*/4, /*3*/7, /*4*/9, /*5*/10, /*6*/6, /*7*/8, /*8*/6, /*9*/2, /*10*/5};
-    public static final int[] STEPS_TO_PLACE = {0, /*1*/1, /*2*/2, /*3*/2, /*4*/2, /*5*/2, /*6*/3, /*7*/2, /*8*/2, /*9*/1, /*10*/2};
+    public static final int[] ARGS_NUMBER = {0, /*1*/2, /*2*/4, /*3*/7, /*4*/9, /*5*/10, /*6*/6, /*7*/8, /*8*/6, /*9*/2, /*10*/5, /*11*/ 5};
+    public static final int[] STEPS_TO_PLACE = {0, /*1*/1, /*2*/2, /*3*/2, /*4*/2, /*5*/2, /*6*/3, /*7*/2, /*8*/2, /*9*/1, /*10*/2, /*11*/ 2};
     
     public static final int LINE_THICKNESS = 24;
 
@@ -73,6 +74,8 @@ public abstract class Element {
             	return new LevelStart();
             case Element.LEVEL_FINISH:
             	return new LevelFinish();
+            case Element.LAVA:
+                return new Lava();
             default:
                 Logger.log("Unknown id: " + id);
                 return null;

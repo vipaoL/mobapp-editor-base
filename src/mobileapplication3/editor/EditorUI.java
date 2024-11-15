@@ -265,12 +265,19 @@ public class EditorUI extends Container {
                 placementButtonPanel.setVisible(false);
             }
         };
+
+        Button btnLava = new Button("Lava") {
+            public void buttonPressed() {
+                place(Element.LAVA, editorCanvas.getCursorX(), editorCanvas.getCursorY());
+                placementButtonPanel.setVisible(false);
+            }
+        };
         
         Button[] placementButtons;
         if (mode == MODE_STRUCTURE) {
-        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline};
+        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline, btnLava};
         } else {
-        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline, btnFinish};
+        	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline, btnLava, btnFinish};
         }
         placementButtonPanel = new ButtonPanelHorizontal(placementButtons)
                 .setBtnsInRowCount(BTNS_IN_ROW);
