@@ -70,8 +70,8 @@ public class About extends AbstractPopupPage {
     }
 
     protected IUIComponent initAndGetPageContent() {
-    	UIComponent logo = getAppLogo();
-        ButtonCol buttonsList = new ButtonCol(new Button[]{
+        final UIComponent logo = getAppLogo();
+        final ButtonCol buttonsList = new ButtonCol(new Button[]{
                 new Button("Open GitHub " + LINK_PREVIEW) {
                     public void buttonPressed() {
                         Platform.platformRequest(LINK);
