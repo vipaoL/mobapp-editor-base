@@ -23,13 +23,9 @@ public class Page3 extends AbstractSetupWizardPage {
 
     public void initOnFirstShow() {
         this.text.setText(
-                "aaaaaaaaaaa"
-                + "aaaaaaaaaaaa"
-                + "aaaaaaaaaaaaaaaaaa"
-                + "aaaaaaaaaa"
-                + "aaaaaaaaaaaaaaa"
-                + "aaaaaaaaaaaaaaaaa"
-                + "aaaaaaaaaaaaaaaaa.");
+                "Levels are completely predefined tracks."
+                + " To complete a level you should touch a green finish plate."
+                + " Levels are an experimental feature yet.");
     }
 
     protected IUIComponent initAndGetPageContent() {

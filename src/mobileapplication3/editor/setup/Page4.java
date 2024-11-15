@@ -32,9 +32,8 @@ public class Page4 extends AbstractSetupWizardPage {
                 "This app lets you to create structures and levels for mobapp-game."
                         + " You can load structures into the game"
                         + " by pressing \"Load Structures\" in the main menu."
-                        + " The game will try to find themaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa in several"
-                        + " folders. Let's pick one of them to save structures"
-                        + " you'll create into.");
+                        + " Let's choose a folder to save structures"
+                        + " and levels you'll create into.");
     }
 
     protected IUIComponent initAndGetPageContent() {

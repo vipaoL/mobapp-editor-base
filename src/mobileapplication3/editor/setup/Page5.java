@@ -26,7 +26,7 @@ public class Page5 extends AbstractSetupWizardPage {
     private Button[] listButtons;
 
     public Page5(Button[] buttons, SetupWizard.Feedback feedback) {
-        super("Let's pick a folder", buttons, feedback);
+        super("Let's choose the game folder", buttons, feedback);
         list = new ButtonCol() {
         	public boolean handlePointerClicked(int x, int y) {
                 super.handlePointerClicked(x, y);
@@ -40,7 +40,7 @@ public class Page5 extends AbstractSetupWizardPage {
     	actionButtons.setSelected(actionButtons.getButtonCount() - 1);
     	actionButtons.buttons[1] = new Button("Finish") {
 			public void buttonPressed() {
-				saveFolderChoise(listButtons[list.getSelected()].getTitle());
+				saveFolderChoice(listButtons[list.getSelected()].getTitle());
 			}
 		};
 		list.setIsSelectionVisible(true);
@@ -72,7 +72,7 @@ public class Page5 extends AbstractSetupWizardPage {
         })).start();
     }
     
-    private void saveFolderChoise(final String path) {
+    private void saveFolderChoice(final String path) {
         showPopup(new LoadingPopup("Checking folder...", this));
         (new Thread(new Runnable() {
         	String subFolderPath;
