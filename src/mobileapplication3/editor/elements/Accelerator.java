@@ -4,57 +4,17 @@ import mobileapplication3.platform.Mathh;
 import mobileapplication3.platform.ui.Graphics;
 import mobileapplication3.ui.Property;
 
-public class Accelerator extends Element {
+public class Accelerator extends AbstractRectBodyElement {
 	
-	// *############	"*" - (anchorX;anchorY)
-	// #     @     #	"@" - (x;y)
-	// #############
-	
-	private short x, y, l, thickness = 20, angle, directionOffset, m = 150, effectDuration = 30;
-	private short anchorX, anchorY;
+	private short directionOffset, m = 150, effectDuration = 30;
 
-	public PlacementStep[] getPlacementSteps() {
-		return new PlacementStep[] {
-			new PlacementStep() {
-				public void place(short pointX, short pointY) {
-					setAnchorPoint(pointX, pointY);
-				}
-
-				public String getName() {
-					return "Move";
-				}
-
-				public String getCurrentStepInfo() {
-					return "x=" + anchorX + "y=" + anchorY;
-				}
-			},
-			new PlacementStep() {
-				public void place(short pointX, short pointY) {
-                    short dx = (short) (pointX - anchorX);
-                    short dy = (short) (pointY - anchorY);
-                    l = (short) calcDistance(dx, dy);
-                    angle = (short) Mathh.arctg(dx, dy);
-                    calcCenterPoint();
-				}
-
-				public String getName() {
-					return "Change length and angle";
-				}
-
-				public String getCurrentStepInfo() {
-					return "l=" + l + "angle=" + angle;
-				}
-			}
-		};
+	public Accelerator() {
+		super(0xff00ff);
 	}
 
-	public PlacementStep[] getExtraEditingSteps() {
-		return new PlacementStep[0];
-	}
-
-	public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
-		int dx = (int) (l * Mathh.cos(angle) / 1000);
-        int dy = (int) (l * Mathh.sin(angle) / 1000);
+    public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
+		int dx = l * Mathh.cos(angle) / 1000;
+        int dy = l * Mathh.sin(angle) / 1000;
         int colorModifier = (m - 100) * 3;
         int red = Math.min(255, Math.max(0, colorModifier));
         int blue = Math.min(255, Math.max(0, -colorModifier));
@@ -89,48 +49,20 @@ public class Accelerator extends Element {
                 zoomOut,
                 drawThickness);
 	}
-	
+
 	private short[] getZeros() {
 		short x = (short) (this.x - l * Mathh.cos(angle) / 2000);
 		short y = (short) (this.y - l * Mathh.sin(angle) / 2000);
 		return new short[] {x, y};
 	}
-	
+
 	private void setZeros(int x, int y, int l, int angle) {
 		this.x = (short) (x + l * Mathh.cos(angle) / 2000);
 		this.y = (short) (y + l * Mathh.sin(angle) / 2000);
 	}
-	
-//	private void setCenterPoint(short x, short y) {
-//		if (x == this.x && y == this.y) {
-//			return;
-//		}
-//		this.x = x;
-//		this.y = y;
-//		calcAnchorPoint();
-//	}
-	
-	private void setAnchorPoint(short x, short y) {
-		if (x == anchorX && y == anchorY) {
-			return;
-		}
-		anchorX = x;
-		anchorY = y;
-		calcCenterPoint();
-	}
-	
-	private void calcCenterPoint() {
-		x = (short) (anchorX + l * Mathh.cos(angle) / 2000 + thickness * Mathh.cos(angle + 90) / 2000);
-		y = (short) (anchorY + l * Mathh.sin(angle) / 2000 + thickness * Mathh.sin(angle + 90) / 2000);
-	}
-	
-	private void calcAnchorPoint() {
-		anchorX = (short) (x - l * Mathh.cos(angle) / 2000 - thickness * Mathh.cos(angle + 90) / 2000);
-		anchorY = (short) (y - l * Mathh.sin(angle) / 2000 - thickness * Mathh.sin(angle + 90) / 2000);
-	}
 
 	public Element setArgs(short[] args) {
-//		x = args[0]; // will be in the next mgstructs file format
+//		x = args[0]; // will be in the next mgstruct file format
 //		y = args[1];
 		setZeros(args[0], args[1], args[2], args[4]);
 		l = args[2];
@@ -151,73 +83,8 @@ public class Accelerator extends Element {
 	}
 
 	public Property[] getArgs() {
-    	return new Property[] {
-    			new Property("X") {
-					public void setValue(short value) {
-						x = value;
-					}
-
-					public short getValue() {
-						return x;
-					}
-    			},
-    			new Property("Y") {
-					public void setValue(short value) {
-						y = value;
-					}
-
-					public short getValue() {
-						return y;
-					}
-    			},
-    			new Property("L") {
-					public void setValue(short value) {
-						l = value;
-					}
-
-					public short getValue() {
-						return l;
-					}
-					
-					public short getMinValue() {
-						return 0;
-					}
-    			},
-    			new Property("Thickness") {
-					public void setValue(short value) {
-						thickness = value;
-					}
-
-					public short getValue() {
-						return thickness;
-					}
-					
-					public short getMinValue() {
-						return 0;
-					}
-					
-					public short getMaxValue() {
-						return (short) (l*2);
-					}
-    			},
-    			new Property("Angle", true) {
-					public void setValue(short value) {
-						angle = value;
-					}
-
-					public short getValue() {
-						return angle;
-					}
-					
-					public short getMinValue() {
-						return 0;
-					}
-					
-					public short getMaxValue() {
-						return 360;
-					}
-    			},
-    			new Property("Speed direction offset") {
+    	return concatArrays(super.getArgs(), new Property[] {
+				new Property("Speed direction offset") {
 					public void setValue(short value) {
 						directionOffset = value;
 					}
@@ -225,16 +92,16 @@ public class Accelerator extends Element {
 					public short getValue() {
 						return directionOffset;
 					}
-					
+
 					public short getMinValue() {
 						return 0;
 					}
-					
+
 					public short getMaxValue() {
 						return 360;
 					}
-    			},
-    			new Property("Speed multiplier") {
+				},
+				new Property("Speed multiplier") {
 					public void setValue(short value) {
 						m = value;
 					}
@@ -242,16 +109,16 @@ public class Accelerator extends Element {
 					public short getValue() {
 						return m;
 					}
-					
+
 					public short getMinValue() {
 						return (short) -getMaxValue();
 					}
-					
+
 					public short getMaxValue() {
 						return 2048;
 					}
-    			},
-    			new Property("Effect duration (ticks)") {
+				},
+				new Property("Effect duration (ticks)") {
 					public void setValue(short value) {
 						effectDuration = value;
 					}
@@ -259,16 +126,16 @@ public class Accelerator extends Element {
 					public short getValue() {
 						return effectDuration;
 					}
-					
+
 					public short getMinValue() {
 						return 0;
 					};
-					
+
 					public short getMaxValue() {
 						return 1200;
 					}
-    			}
-    	};
+				}
+		});
     }
 
 	public short getID() {
@@ -281,49 +148,6 @@ public class Accelerator extends Element {
 
 	public String getName() {
 		return "Accelerator";
-	}
-
-	public void move(short dx, short dy) {
-		x += dx;
-		y += dy;
-	}
-	
-	private short[] getCornerPoint(int i) {
-		// -- +-
-		// -+ ++
-		int m1, m2;
-		if (i == 0) {
-			m1 = m2 = -1;
-		} else if (i == 1) {
-			m1 = 1;
-			m2 = -1;
-		} else if (i == 2) {
-			m1 = m2 = 1;
-		} else {
-			m1 = -1;
-			m2 = 1;
-		}
-		
-		return new short[] {
-				(short) (x + m1 * l * Mathh.cos(angle) / 2000 + m2 * thickness * Mathh.cos(angle + 90) / 2000),
-				(short) (y + m1 * l * Mathh.sin(angle) / 2000 + m2 * thickness * Mathh.sin(angle + 90) / 2000)
-		};
-	}
-
-	public short[] getStartPoint() {
-		return getCornerPoint(((angle+90)%360 < 180) ? 0 : 2);
-	}
-
-	public short[] getEndPoint() {
-		return getCornerPoint(((angle+90)%360 < 180) ? 1 : 3);
-	}
-
-	public boolean isBody() {
-		return true;
-	}
-
-	public void recalcCalculatedArgs() {
-		calcAnchorPoint();
 	}
 
 }

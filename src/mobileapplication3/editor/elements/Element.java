@@ -162,6 +162,13 @@ public abstract class Element {
     		return COLOR_LANDSCAPE;
     	}
     }
+
+    public static Property[] concatArrays(Property[] arr1, Property[] arr2) {
+        Property[] result = new Property[arr1.length + arr2.length];
+        System.arraycopy(arr1, 0, result, 0, arr1.length);
+        System.arraycopy(arr2, 0, result, arr1.length, arr2.length);
+        return result;
+    }
     
     public abstract PlacementStep[] getPlacementSteps();
     
