@@ -62,7 +62,7 @@ public class Circle extends AbstractCurve {
                 	while (ang < 1) {
                 		ang += 360;
                 	}
-                	setArcAngle((short) ang);
+                	setArcAngle(ang);
                 }
 
                 public String getName() {
@@ -127,12 +127,6 @@ public class Circle extends AbstractCurve {
         return this;
     }
     
-    public Element setArc(short arcAngle, short startAngle) {
-        setArcAngle(arcAngle);
-        setStartAngle(startAngle);
-        return this;
-    }
-    
     public Element setArcAngle(short arcAngle) {
         if (this.arcAngle == arcAngle) {
             return this;
@@ -147,7 +141,7 @@ public class Circle extends AbstractCurve {
             startAngle += 360;
         }
         startAngle%=360;
-        
+
         if (this.startAngle == startAngle) {
             return this;
         }
@@ -155,7 +149,7 @@ public class Circle extends AbstractCurve {
         pointsCache = null;
         return this;
     }
-    
+
     public Element setScale(short scaleX, short scaleY) {
         if (this.kx == scaleX && this.ky == scaleY) {
             return this;
@@ -165,7 +159,7 @@ public class Circle extends AbstractCurve {
         pointsCache = null;
         return this;
     }
-    
+
     public Element setArgs(short[] args) {
         x = args[0];
         y = args[1];
@@ -177,12 +171,11 @@ public class Circle extends AbstractCurve {
         pointsCache = null;
         return this;
     }
-    
+
     public short[] getArgsValues() {
-        short[] args = {x, y, r, arcAngle, startAngle, kx, ky};
-        return args;
+        return new short[]{x, y, r, arcAngle, startAngle, kx, ky};
     }
-    
+
     public Property[] getArgs() {
     	return new Property[] {
     			new Property("X") {
@@ -327,8 +320,7 @@ public class Circle extends AbstractCurve {
     		pointsCache.movePoints(dx, dy);
     	}
     }
-    
-    // TODO check if this point is on the curve
+
     public short[] getStartPoint() {
     	if (Mathh.isPointOnArc(180, startAngle, arcAngle)) {
     		return new short[]{(short) (x - r), y};
@@ -371,14 +363,14 @@ public class Circle extends AbstractCurve {
     }
     
     public void paint(Graphics g, int zoomOut, int offsetX, int offsetY, boolean drawThickness, boolean drawAsSelected) {
-    	int centerMarkR = 4;
-    	int leftX = xToPX(x - centerMarkR, zoomOut, offsetX);
-    	int rightX = xToPX(x + centerMarkR, zoomOut, offsetX);
-    	int topY = yToPX(y - centerMarkR, zoomOut, offsetY);
-    	int bottomY = yToPX(y + centerMarkR, zoomOut, offsetY);
-    	g.drawLine(leftX, topY, rightX, bottomY);
-    	g.drawLine(rightX, topY, leftX, bottomY);
     	super.paint(g, zoomOut, offsetX, offsetY, drawThickness, drawAsSelected);
+        int centerMarkR = 4;
+        int leftX = xToPX(x - centerMarkR, zoomOut, offsetX);
+        int rightX = xToPX(x + centerMarkR, zoomOut, offsetX);
+        int topY = yToPX(y - centerMarkR, zoomOut, offsetY);
+        int bottomY = yToPX(y + centerMarkR, zoomOut, offsetY);
+        g.drawLine(leftX, topY, rightX, bottomY);
+        g.drawLine(rightX, topY, leftX, bottomY);
     }
     
     public void recalcCalculatedArgs() { }
