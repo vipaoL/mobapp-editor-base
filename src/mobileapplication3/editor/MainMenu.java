@@ -2,6 +2,7 @@ package mobileapplication3.editor;
 
 import mobileapplication3.editor.AutoSaveUI.AutoSaveData;
 import mobileapplication3.editor.elements.Element;
+import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.RootContainer;
 import mobileapplication3.ui.BackButton;
 import mobileapplication3.ui.Button;
@@ -136,7 +137,10 @@ public class MainMenu extends Container {
 					});
 				}
 			}
-		} catch (Exception ignored) { }
+		} catch (Exception ex) {
+			Platform.showError("Can't restore auto-saved data:", ex);
+			closePopup();
+		}
 
 		autoSaveCheckDone = true;
 	}

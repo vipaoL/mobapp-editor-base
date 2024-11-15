@@ -26,10 +26,10 @@ public class MGStructs {
                 elements[i] = readNextElement(dis);
                 if (elements[i] == null) {
                     Logger.log("got null. stopping read");
-                    return elements;
+                    break;
                 }
             }
-            return elements;
+            return shrinkArray(elements);
         } catch (NullPointerException ex) {
         	Logger.log("nothing to read (null)");
         	return null;
@@ -37,6 +37,16 @@ public class MGStructs {
             Logger.log(ex);
             return null;
         }
+    }
+
+    private static Element[] shrinkArray(Element[] elements) {
+        int l = 0;
+        while (l < elements.length && elements[l] != null) {
+            l++;
+        }
+        Element[] newArray = new Element[l];
+        System.arraycopy(elements, 0, newArray, 0, l);
+        return newArray;
     }
     
     public static Element readNextElement(DataInputStream is) {
