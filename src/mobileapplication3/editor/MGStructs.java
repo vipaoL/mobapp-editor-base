@@ -13,7 +13,7 @@ public class MGStructs {
 		Logger.log(path);
         return readMGStruct(FileUtils.fileToDataInputStream(path));
     }
-    
+
     public static Element[] readMGStruct(DataInputStream dis) {
         try {
             short fileVer = dis.readShort();
@@ -48,7 +48,7 @@ public class MGStructs {
         System.arraycopy(elements, 0, newArray, 0, l);
         return newArray;
     }
-    
+
     public static Element readNextElement(DataInputStream is) {
         String logLine = "";
         Logger.log(logLine);
@@ -66,16 +66,16 @@ public class MGStructs {
             if (element == null) {
                 return null;
             }
-            
+
             int argsCount = element.getArgsCount();
             short[] args = new short[argsCount];
             for (int i = 0; i < argsCount; i++) {
                 args[i] = is.readShort();
             }
-            
+
             logLine += Utils.shortArrayToString(args);
             Logger.logReplaceLast(prevLogLine, logLine);
-            
+
             element.setArgs(args);
             return element;
         } catch (IOException ex) {

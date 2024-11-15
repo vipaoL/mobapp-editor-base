@@ -12,20 +12,20 @@ import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.UIComponent;
 
 public class StructuresMenu extends AbstractEditorMenu {
-	
+
 	private String path = null;
-	
+
 	public StructuresMenu(final IPopupFeedback parent) {
 		super(parent, "Structures");
 	}
-	
+
 	private String getPath() {
 		if (path == null) {
 			path = EditorSettings.getStructsFolderPath();
 		}
 		return path;
 	}
-	
+
 	public UIComponent[] getGridContent() {
 		Vector gridContentVector = new Vector();
 		String[] files = { };
@@ -55,7 +55,7 @@ public class StructuresMenu extends AbstractEditorMenu {
 		Logger.log("Grid: " + gridContent.length + " cells");
 		return gridContent;
 	}
-	
+
 	public Button[] getList() {
 		String[] files = null;
 		try {
@@ -77,7 +77,7 @@ public class StructuresMenu extends AbstractEditorMenu {
 		}
 		return buttons;
 	}
-	
+
 	private class StructureViewerInteractive extends StructureViewerComponent {
 		private String path;
 		public StructureViewerInteractive(Element[] mgStruct, String path) {
@@ -88,26 +88,26 @@ public class StructuresMenu extends AbstractEditorMenu {
 		public boolean canBeFocused() {
 			return true;
 		}
-		
+
 		protected boolean handlePointerClicked(int x, int y) {
 			openInEditor();
 			return true;
 		}
-		
+
 		protected boolean handleKeyPressed(int keyCode, int count) {
 			openInEditor();
 			return true;
 		}
-		
+
 		public void openInEditor() {
 			StructuresMenu.this.openInEditor(elements, path);
 		}
 	}
-	
+
 	public void openInEditor(String path) {
 		openInEditor(MGStructs.readMGStruct(path), path);
 	}
-	
+
 	public void openInEditor(Element[] elements, String path) {
 		RootContainer.setRootUIComponent(new EditorUI(EditorUI.MODE_STRUCTURE, elements, path));
 	}

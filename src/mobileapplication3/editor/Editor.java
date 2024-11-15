@@ -13,7 +13,7 @@ public class Editor {
 				public boolean getKeyRepeatedInListsEnabled() {
 					return EditorSettings.getKeyRepeatedInListsEnabled(false);
 				}
-				
+
 				public boolean getKbSmoothScrollingEnabled() {
 					return EditorSettings.getKbSmoothScrollingEnabled(true);
 				}
@@ -25,15 +25,15 @@ public class Editor {
 				public boolean getTransparencyEnabled() {
 					return EditorSettings.getTransparencyEnabled(false);
 				}
-				
+
 				public boolean showKbHints() {
 					return RootContainer.displayKbHints;
 				}
-				
+
 				public boolean enableOnScreenLog() {
 					return EditorSettings.getOnScreenLogEnabled(false);
 				}
-				
+
 				public void onChange() {
 					try {
 						RootContainer.init();
@@ -53,7 +53,6 @@ public class Editor {
                 }));
             }
         } catch(Exception ex) {
-            ex.printStackTrace();
             Platform.showError(ex);
         }
     }

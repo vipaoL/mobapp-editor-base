@@ -30,31 +30,32 @@ import mobileapplication3.ui.TextComponent;
 
 
 public class PathPicker extends AbstractPopupPage {
-    
-    private static final String STRUCTURE_FILE_EXTENSIOM = ".mgstruct";
-    private static final String LEVEL_FILE_EXTENSIOM = ".mglvl";
+
+    private static final String STRUCTURE_FILE_EXTENSION = ".mgstruct";
+    private static final String LEVEL_FILE_EXTENSION = ".mglvl";
 	public static final String QUESTION_REPLACE_WITH_PATH = ".curr_folder.";
     private static final int TARGET_SAVE = 0, TARGET_OPEN = 1;
     public static final int MODE_STRUCTURE = EditorUI.MODE_STRUCTURE, MODE_LEVEL = EditorUI.MODE_LEVEL;
 
-    private TextComponent question = new TextComponent();
-    private ButtonCol list = new ButtonCol();
+    private final TextComponent question = new TextComponent();
+    private final ButtonCol list = new ButtonCol();
     private Feedback feedback;
-    
-    private int currentTarget = TARGET_SAVE, mode;
+
+    private final int mode;
+    private int currentTarget = TARGET_SAVE;
     private String currentFolder = null, pickedPath, fileName = "";
     private String questionTemplate = "";
-    
+
     public PathPicker(int mode, IPopupFeedback parent) {
     	super("File picker", parent);
     	this.mode = mode;
     	initUI();
     }
-    
+
     public PathPicker pickFolder(String question, Feedback onComplete) {
         return pickFolder(null, question, onComplete);
     }
-    
+
     public PathPicker pickFolder(String initialPath, String question, Feedback onComplete) {
         questionTemplate = question;
         currentTarget = TARGET_SAVE;
@@ -63,11 +64,11 @@ public class PathPicker extends AbstractPopupPage {
         initFM();
         return this;
     }
-    
+
     public PathPicker pickFile(String question, Feedback onComplete) {
         return pickFile(null, question, onComplete);
     }
-    
+
     public PathPicker pickFile(String initialPath, String question, Feedback onComplete) {
         questionTemplate = question;
         currentTarget = TARGET_OPEN;
@@ -76,7 +77,7 @@ public class PathPicker extends AbstractPopupPage {
         initFM();
         return this;
     }
-    
+
     private void initFM() {
         question.setText("");
         if (currentTarget == TARGET_SAVE) {
@@ -84,12 +85,12 @@ public class PathPicker extends AbstractPopupPage {
         } else if (currentTarget == TARGET_OPEN) {
             title.setText("Choose a file");
         }
-        
+
         if (currentTarget == TARGET_SAVE) {
-            fileName = getTodaysFileName();
+            fileName = generateNewFileName();
             Logger.log(fileName);
         }
-        
+
         (new Thread(new Runnable() {
             public void run() {
                 if (currentFolder == null) {
@@ -105,10 +106,10 @@ public class PathPicker extends AbstractPopupPage {
             }
         })).start();
     }
-    
+
     private void getNewList() {
         title.setText(currentFolder);
-        
+
         (new Thread(new Runnable() {
             public void run() {
                 try {
@@ -119,7 +120,7 @@ public class PathPicker extends AbstractPopupPage {
             }
         })).start();
     }
-    
+
     private void pickPath(String path) {
         pickedPath = path;
         if (!fileName.equals("")) {
@@ -128,7 +129,7 @@ public class PathPicker extends AbstractPopupPage {
             question.setText("");
         }
     }
-    
+
     private void setPaths(String[] paths) {
         Button[] listButtons = new Button[paths.length];
         for (int i = 0; i < paths.length; i++) {
@@ -147,7 +148,7 @@ public class PathPicker extends AbstractPopupPage {
                         if (currentTarget == TARGET_OPEN) {
                             fileName = name;
                         }
-                        
+
                         pickPath(currentFolder + name);
                     }
                 }
@@ -155,18 +156,18 @@ public class PathPicker extends AbstractPopupPage {
         }
         setListButtons(listButtons);
     }
-    
+
     private void setListButtons(Button[] buttons) {
         list.setButtons(buttons);
         setSize(w, h);
         refreshFocusedComponents();
         repaint();
     }
-    
+
     private void initUI() {
         question.enableHorizontalScrolling(true).setBgColor(COLOR_TRANSPARENT);
     }
-    
+
     protected Button[] getActionButtons() {
     	Button okBtn = new Button("OK") {
             public void buttonPressed() {
@@ -176,7 +177,7 @@ public class PathPicker extends AbstractPopupPage {
                 feedback.onComplete(pickedPath);
             }
         };
-        
+
         Button cancelBtn = new Button("Cancel") {
             public void buttonPressed() {
                 setVisible(false);
@@ -185,7 +186,7 @@ public class PathPicker extends AbstractPopupPage {
         };
     	return new Button[]{okBtn, cancelBtn};
     }
-    
+
     protected IUIComponent initAndGetPageContent() {
     	return new Container() {
     		public void init() {
@@ -205,15 +206,15 @@ public class PathPicker extends AbstractPopupPage {
 		};
     }
 
-    private String getTodaysFileName() {
+    private String generateNewFileName() {
         Calendar calendar = Calendar.getInstance();
         String fileExtension;
         switch (mode) {
 		case MODE_STRUCTURE:
-			fileExtension = STRUCTURE_FILE_EXTENSIOM;
+			fileExtension = STRUCTURE_FILE_EXTENSION;
 			break;
 		case MODE_LEVEL:
-			fileExtension = LEVEL_FILE_EXTENSIOM;
+			fileExtension = LEVEL_FILE_EXTENSION;
 			break;
 		default:
 			fileExtension = ".unknown";
@@ -228,7 +229,7 @@ public class PathPicker extends AbstractPopupPage {
                 + "-" + format(calendar.get(Calendar.SECOND))
                 + fileExtension;
     }
-    
+
     private String format(int date) {
     	String dateStr = String.valueOf(date);
     	if (dateStr.length() < 2) {
@@ -236,10 +237,10 @@ public class PathPicker extends AbstractPopupPage {
     	}
     	return dateStr;
     }
-    
+
     public interface Feedback {
         void onComplete(final String path);
         void onCancel();
     }
-    
+
 }

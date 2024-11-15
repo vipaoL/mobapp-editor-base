@@ -21,11 +21,11 @@ import mobileapplication3.ui.TextComponent;
 import mobileapplication3.ui.UIComponent;
 
 public abstract class AbstractEditorMenu extends AbstractPopupWindow {
-	
+
 	private final static int LAYOUT_MINIMIZED = 1, LAYOUT_LIST_OF_NAMES = 2, LAYOUT_GRID = 3;
 
-	private TextComponent title;
-	private ButtonCol buttons;
+	private final TextComponent title;
+	private final ButtonCol buttons;
 	private Grid grid = null;
 	private ButtonRow backButtonComponent;
 	private String[] files = null;
@@ -164,17 +164,17 @@ public abstract class AbstractEditorMenu extends AbstractPopupWindow {
 						.setPos(x0 + w/2, backButtonComponent.getTopY(), BOTTOM | HCENTER);
 				break;
 		}
-        
 	}
-	
+
 	protected String[] listFiles(String path) throws IOException {
 		if (files == null) {
 			files = FileUtils.list(path);
 		}
 		return files;
 	}
-	
+
 	protected abstract Button[] getList();
 	protected abstract UIComponent[] getGridContent();
 	protected abstract void createNew();
+
 }

@@ -7,6 +7,7 @@ package mobileapplication3.editor;
 
 import java.io.IOException;
 
+import mobileapplication3.platform.Logger;
 import mobileapplication3.platform.Platform;
 import mobileapplication3.platform.ui.Image;
 import mobileapplication3.ui.AbstractPopupPage;
@@ -39,7 +40,7 @@ public class About extends AbstractPopupPage {
             new BackButton(feedback)
         };
     }
-    
+
     public static UIComponent getAppLogo() {
     	Image logoImage = null;
         String errorMessage = null;
@@ -47,16 +48,15 @@ public class About extends AbstractPopupPage {
         try {
             logoImage = Image.createImage("/editorlogo.png");
         } catch (IOException ex) {
-            ex.printStackTrace();
+            Logger.log(ex);
             errorMessage = ex + " ";
             try {
                 logoImage = Image.createImage("/editoricon.png");
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.log(e);
                 errorMessage += e;
             }
         }
-
 
         UIComponent logo;
         if (logoImage != null) {
@@ -70,23 +70,21 @@ public class About extends AbstractPopupPage {
     }
 
     protected IUIComponent initAndGetPageContent() {
-    	final UIComponent logo = getAppLogo();
-        Button[] settingsButtons = new Button[]{
-            new Button("Open GitHub " + LINK_PREVIEW) {
-                public void buttonPressed() {
-                    Platform.platformRequest(LINK);
-                }
-            }.setBgColor(BG_COLOR_HIGHLIGHTED),
-            new Button("Open TG channel " + LINK2_PREVIEW) {
-                public void buttonPressed() {
-                    Platform.platformRequest(LINK2);
-                }
-            }.setBgColor(BG_COLOR_HIGHLIGHTED)
-        };
-        
-        final ButtonCol buttonsList = (ButtonCol) new ButtonCol(settingsButtons);
-        
-        Container container = new Container() {
+    	UIComponent logo = getAppLogo();
+        ButtonCol buttonsList = new ButtonCol(new Button[]{
+                new Button("Open GitHub " + LINK_PREVIEW) {
+                    public void buttonPressed() {
+                        Platform.platformRequest(LINK);
+                    }
+                }.setBgColor(BG_COLOR_HIGHLIGHTED),
+                new Button("Open TG channel " + LINK2_PREVIEW) {
+                    public void buttonPressed() {
+                        Platform.platformRequest(LINK2);
+                    }
+                }.setBgColor(BG_COLOR_HIGHLIGHTED)
+        });
+
+        return new Container() {
             public void init() {
                 setComponents(new IUIComponent[] {logo, buttonsList});
                 setBgColor(COLOR_TRANSPARENT);
@@ -98,8 +96,5 @@ public class About extends AbstractPopupPage {
                 logo.setSize(logoSide, logoSide).setPos(x0 + w/2, (y0 + buttonsList.getTopY() - margin) / 2, HCENTER | VCENTER);
             }
         };
-
-        return container;
     }
-    
 }

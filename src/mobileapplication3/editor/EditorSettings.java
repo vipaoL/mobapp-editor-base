@@ -17,34 +17,34 @@ public class EditorSettings {
 
             IS_SETUP_WIZARD_COMPLETED = "setupDone",
             GAME_FOLDER_PATH = "MGPath",
-            ANIMS = "anims",
+            KB_SMOOTH_SCROLLING = "kbSmScrl",
             TRANSPARENCY = "trnspcy",
             LISTS_KEY_REPEATS = "listKRepeats",
             AUTO_SAVE = "autoSave",
             WHAT_TO_LOAD_AUTOMATICALLY = "alwLoad",
     		SHOW_LOG = "showLog",
-    		KINETIC_SCROLL = "kScrol";
+    		KINETIC_SCROLL = "knScrl";
 
     public static final int
             OPTION_ALWAYS_LOAD_NONE = 0,
             OPTION_ALWAYS_LOAD_LIST = 1,
             OPTION_ALWAYS_LOAD_THUMBNAILS = 2;
-    
+
     private static String gameFolderPath = null;
     private static int whatToLoadAutomatically = -1;
-    
+
     private static Settings settingsInst = null;
-    
+
     public static void resetSettings() {
     	getSettingsInst().resetSettings();
     }
-    
+
     private static Settings getSettingsInst() {
     	if (settingsInst == null) {
     		settingsInst = new Settings(new String[]{
     	            IS_SETUP_WIZARD_COMPLETED,
     	            GAME_FOLDER_PATH,
-    	            ANIMS,
+                    KB_SMOOTH_SCROLLING,
                     TRANSPARENCY,
     	            LISTS_KEY_REPEATS,
     	            AUTO_SAVE,
@@ -57,33 +57,33 @@ public class EditorSettings {
     }
 
     ///
-    
+
     public static boolean getKineticScrollingEnabled() {
         return getSettingsInst().getBool(KINETIC_SCROLL);
     }
-    
+
     public static boolean getKineticScrollingEnabled(boolean defaultValue) {
         return getSettingsInst().getBool(KINETIC_SCROLL, defaultValue);
     }
-    
+
     public static void setKineticScrollingEnabled(boolean b) {
     	getSettingsInst().set(KINETIC_SCROLL, b);
     }
 
     ///
-    
+
     public static boolean getOnScreenLogEnabled() {
         return getSettingsInst().getBool(SHOW_LOG);
     }
-    
+
     public static boolean getOnScreenLogEnabled(boolean defaultValue) {
         return getSettingsInst().getBool(SHOW_LOG, defaultValue);
     }
-    
+
     public static void setOnScreenLogEnabled(boolean b) {
     	getSettingsInst().set(SHOW_LOG, b);
     }
-    
+
     ///
 
     public static int getWhatToLoadAutomatically() {
@@ -100,37 +100,37 @@ public class EditorSettings {
     }
 
     ///
-    
+
     public static boolean getAutoSaveEnabled() {
         return getSettingsInst().getBool(AUTO_SAVE);
     }
-    
+
     public static boolean getAutoSaveEnabled(boolean defaultValue) {
         return getSettingsInst().getBool(AUTO_SAVE, defaultValue);
     }
-    
+
     public static void setAutoSaveEnabled(boolean b) {
     	getSettingsInst().set(AUTO_SAVE, b);
     }
-    
+
     public static boolean toggleAutoSaveEnabled() {
     	return getSettingsInst().toggleBool(AUTO_SAVE);
     }
-    
+
     ///
-    
+
     public static boolean getKeyRepeatedInListsEnabled() {
         return getSettingsInst().getBool(LISTS_KEY_REPEATS);
     }
-    
+
     public static boolean getKeyRepeatedInListsEnabled(boolean defaultValue) {
         return getSettingsInst().getBool(LISTS_KEY_REPEATS, defaultValue);
     }
-    
+
     public static void setKeyRepeatedInListsEnabled(boolean b) {
     	getSettingsInst().set(LISTS_KEY_REPEATS, b);
     }
-    
+
     public static boolean toggleKeyRepeatedInListsEnabled() {
     	return getSettingsInst().toggleBool(LISTS_KEY_REPEATS);
     }
@@ -152,45 +152,43 @@ public class EditorSettings {
     public static boolean toggleTransparency() {
         return getSettingsInst().toggleBool(TRANSPARENCY);
     }
-    
+
     ///
 
     public static boolean getKbSmoothScrollingEnabled() {
-        return getSettingsInst().getBool(ANIMS);
+        return getSettingsInst().getBool(KB_SMOOTH_SCROLLING);
     }
 
     public static boolean getKbSmoothScrollingEnabled(boolean defaultValue) {
-        return getSettingsInst().getBool(ANIMS, defaultValue);
+        return getSettingsInst().getBool(KB_SMOOTH_SCROLLING, defaultValue);
     }
 
     public static void setKbSmoothScrollingEnabled(boolean b) {
-    	getSettingsInst().set(ANIMS, b);
+    	getSettingsInst().set(KB_SMOOTH_SCROLLING, b);
     }
-    
+
 ///
-    
+
     public static String getLevelsFolderPath() {
     	return getLevelsFolderPath(EditorSettings.getGameFolderPath());
     }
-    
+
     public static String getLevelsFolderPath(String gameFolderPath) {
     	return gameFolderPath + "Levels/";
     }
-    // getMgstructsFolderPath 
-    // getStructsFolderPath
+
     public static String getStructsFolderPath() {
     	return getStructsFolderPath(EditorSettings.getGameFolderPath());
     }
-    
+
     public static String getStructsFolderPath(String gameFolderPath) {
     	return gameFolderPath + "MGStructs/";
     }
-    
+
     public static String getGameFolderPath() {
         if (gameFolderPath == null) {
             gameFolderPath = getSettingsInst().getStr(GAME_FOLDER_PATH);
         }
-        
         return gameFolderPath;
     }
 
@@ -198,9 +196,9 @@ public class EditorSettings {
     	getSettingsInst().set(GAME_FOLDER_PATH, path);
     	gameFolderPath = path;
     }
-    
+
     ///
-    
+
     public static boolean isSetupWizardCompleted() {
         return getSettingsInst().getBool(IS_SETUP_WIZARD_COMPLETED);
     }

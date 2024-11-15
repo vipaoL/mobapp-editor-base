@@ -21,20 +21,20 @@ import mobileapplication3.ui.UIComponent;
  * @author vipaol
  */
 public class Page5 extends AbstractSetupWizardPage {
-    
-    private ButtonCol list;
+
+    private final ButtonCol list;
     private Button[] listButtons;
 
     public Page5(Button[] buttons, SetupWizard.Feedback feedback) {
         super("Let's choose the game folder", buttons, feedback);
         list = new ButtonCol() {
-        	public boolean handlePointerClicked(int x, int y) {
+            public boolean handlePointerClicked(int x, int y) {
                 super.handlePointerClicked(x, y);
-        		return false;
+                return false;
         	}
         };
     }
-    
+
     public void init() {
     	super.init();
     	actionButtons.setSelected(actionButtons.getButtonCount() - 1);
@@ -45,12 +45,12 @@ public class Page5 extends AbstractSetupWizardPage {
 		};
 		list.setIsSelectionVisible(true);
     }
-    
+
     public void initOnFirstShow() {
     	fillList();
         list.setButtonsBgPadding(margin/4);
     }
-    
+
     private void fillList() {
         (new Thread(new Runnable() {
             public void run() {
@@ -71,7 +71,7 @@ public class Page5 extends AbstractSetupWizardPage {
             }
         })).start();
     }
-    
+
     private void saveFolderChoice(final String path) {
         showPopup(new LoadingPopup("Checking folder...", this));
         (new Thread(new Runnable() {
@@ -83,8 +83,7 @@ public class Page5 extends AbstractSetupWizardPage {
                     FileUtils.createFolder(subFolderPath);
                 } catch (Throwable ex) {
                     closePopup();
-                    Platform.showError("Can't create folder " + subFolderPath + ": " + ex.toString());
-                    ex.printStackTrace();
+                    Platform.showError("Can't create folder " + subFolderPath + ": ", ex);
                 }
                 subFolderPath = null;
                 try {
@@ -92,10 +91,8 @@ public class Page5 extends AbstractSetupWizardPage {
                     FileUtils.createFolder(subFolderPath);
                 } catch (Throwable ex) {
                     closePopup();
-                    Platform.showError("Can't create folder " + subFolderPath + ": " + ex.toString());
-                    ex.printStackTrace();
+                    Platform.showError("Can't create folder " + subFolderPath + ":", ex);
                 }
-                
                 try {
                     FileUtils.checkFolder(path);
                     EditorSettings.setGameFolderPath(path);
@@ -103,7 +100,6 @@ public class Page5 extends AbstractSetupWizardPage {
                 } catch (Exception ex) {
                     closePopup();
                     Platform.showError("Can't create file in this folder: " + ex);
-                    ex.printStackTrace();
                 }
             }
         })).start();
@@ -126,22 +122,20 @@ public class Page5 extends AbstractSetupWizardPage {
     	list.setFocused(true);
     }
     
-    private class LoadingPopup extends AbstractPopupPage {
+    private static class LoadingPopup extends AbstractPopupPage {
         int animOffset = 100;
 
         public LoadingPopup(String title, IPopupFeedback parent) {
             super(title, parent);
             new Thread(new Runnable() {
                 public void run() {
-                    while (hasParent()) {                        
-                        animOffset += 10;
-                        repaint();
-                        try {
+                    try {
+                        while (hasParent()) {
+                            animOffset += 10;
+                            repaint();
                             Thread.sleep(100);
-                        } catch (InterruptedException ex) {
-                            ex.printStackTrace();
                         }
-                    }
+                    } catch (InterruptedException ignored) { }
                 }
             }, "loading anim").start();
         }
@@ -180,5 +174,4 @@ public class Page5 extends AbstractSetupWizardPage {
             };
         }
     }
-    
 }

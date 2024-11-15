@@ -21,16 +21,16 @@ import mobileapplication3.platform.Logger;
  */
 
 public abstract class StructureBuilder {
-    
-    public static final int PLACE_NOTHING = -1;
+
     public static final int MODE_STRUCTURE = EditorUI.MODE_STRUCTURE, MODE_LEVEL = EditorUI.MODE_LEVEL;
-    private int mode = MODE_STRUCTURE;
+
+    private final int mode;
     private Vector buffer;
     public Element placingNow;
     private NextPointHandler nextPointHandler;
     public boolean isEditing = false;
     private String path = null;
-    
+
     public StructureBuilder(int mode) {
     	this.mode = mode;
     	buffer = new Vector();
@@ -40,7 +40,7 @@ public abstract class StructureBuilder {
     		buffer.addElement(new LevelStart().setArgs(new short[]{200, -200}));
     	}
 	}
-    
+
     public void place(short id, short x, short y) throws IllegalArgumentException {
     	isEditing = false;
         placingNow = Element.createTypedInstance(id);
@@ -51,7 +51,7 @@ public abstract class StructureBuilder {
         onUpdate();
         handleNextPoint(x, y, true);
     }
-    
+
     public void edit(Element e, int step) {
     	Element[] elements = getElementsAsArray();
     	for (int i = 0; i < elements.length; i++) {
@@ -62,26 +62,26 @@ public abstract class StructureBuilder {
 			
 		}
     }
-    
+
     public void edit(int i, int step) {
     	placingNow = getElementsAsArray()[i];
     	nextPointHandler = new NextPointHandler(step);
     	isEditing = true;
     }
-    
+
     public void handleNextPoint(short x, short y, boolean isPreview) {
         if (placingNow == null) {
             return;
         }
-        
+
         nextPointHandler.showingPreview = isPreview;
-        
         nextPointHandler.handleNextPoint(x, y);
-        
+
+        // stop if the last step is done
         if (nextPointHandler.step >= placingNow.getStepsToPlace() || isEditing) {
             if (!isPreview) {
             	if (placingNow.getID() != Element.END_POINT) {
-            		recalcEndPoint();
+            		recalculateEndPoint();
             	}
                 placingNow = null;
                 nextPointHandler = null;
@@ -89,39 +89,33 @@ public abstract class StructureBuilder {
             }
         }
     }
-    
+
     public void add(Element element) {
-        if (element == null) {
-            return;
+        if (element != null && !(element instanceof EndPoint)) {
+            buffer.addElement(element);
         }
-        
-        if (element instanceof EndPoint) {
-            return;
-        }
-        
-        buffer.addElement(element);
     }
-    
+
     public short[] asShortArray() {
     	int carriage = 0;
         // {file format version, count of elements, ...data..., eof mark}
         short[] data = new short[1 + 1 + getDataLengthInShorts() + 1];
-        
+
         data[carriage] = 1;
         carriage++;
         data[carriage] = (short) getElementsCount();
         carriage++;
-        
+
         for (int i = 0; i < getElementsCount(); i++) {
             Element element = (Element) buffer.elementAt(i);
-            
+
             short[] elementArgs = element.getAsShortArray();
             for (int j = 0; j < elementArgs.length; j++) {
                 data[carriage] = elementArgs[j];
                 carriage++;
             }
         }
-        
+
         data[carriage] = 0;
         return data;
     }
@@ -133,11 +127,11 @@ public abstract class StructureBuilder {
         }
         return data;
     }
-    
+
     public void saveToFile(String path) throws IOException, SecurityException {
         FileUtils.saveShortArrayToFile(asShortArray(), path);
     }
-    
+
     public void loadFile(String path) {
         try {
             Element[] elements = MGStructs.readMGStruct(path);
@@ -155,7 +149,7 @@ public abstract class StructureBuilder {
     public String getFilePath() {
         return path;
     }
-    
+
     public void setFilePath(String path) {
     	this.path = path;
     }
@@ -171,43 +165,42 @@ public abstract class StructureBuilder {
         }
         onUpdate();
     }
-    
+
     public void remove(int i) {
         if (buffer.elementAt(i) instanceof EndPoint || buffer.elementAt(i) instanceof LevelStart) {
             return;
         }
-        
-        boolean needToRecalcEndPoint = true;
+
+        boolean needToRecalculateEndPoint = true;
 //        try {
 //            (EndPoint) buffer.elementAt(0)).getArgs()
-//            needToRecalcEndPoint = ( == ((Element) buffer.elementAt(i)).getEndPoint();
+//            needToRecalculateEndPoint = ( == ((Element) buffer.elementAt(i)).getEndPoint();
 //        } catch (Exception ex) {
 //            Logger.log(ex);
 //        }
-//        Logger.log("needToRecalcEndPoint=" + needToRecalcEndPoint);
+//        Logger.log("needToRecalculateEndPoint=" + needToRecalculateEndPoint);
         buffer.removeElementAt(i);
-        if (needToRecalcEndPoint) {
-            recalcEndPoint();
+        if (needToRecalculateEndPoint) {
+            recalculateEndPoint();
         }
         onUpdate();
     }
-    
+
     public void remove(Element e) {
     	remove(findInBuffer(e));
     }
-    
+
     public int findInBuffer(Element e) {
     	Element[] elements = getElementsAsArray();
     	for (int i = 0; i < elements.length; i++) {
 			if (elements[i] != null && elements[i].equals(e)) {
 				return i;
 			}
-			
 		}
     	throw new IllegalArgumentException("Element " + e + " not found in buffer");
     }
-    
-    public void recalcEndPoint() {
+
+    public void recalculateEndPoint() {
     	if (mode == MODE_LEVEL) {
     		return;
     	}
@@ -216,15 +209,15 @@ public abstract class StructureBuilder {
         EndPoint endPoint = (EndPoint) elements[0];
         endPoint.setArgs(EndPoint.findEndPoint(elements));
     }
-    
+
     public Vector getElements() {
         return buffer;
     }
-    
+
     public int getElementsCount() {
         return buffer.size();
     }
-    
+
     public Element[] getElementsAsArray() {
         Element[] elements = new Element[getElementsCount()];
         for (int i = 0; i < getElementsCount(); i++) {
@@ -232,7 +225,7 @@ public abstract class StructureBuilder {
         }
         return elements;
     }
-    
+
     public int getDataLengthInShorts() {
         int l = 0;
         for (int i = 0; i < getElementsCount(); i++) {
@@ -240,7 +233,7 @@ public abstract class StructureBuilder {
         }
         return l;
     }
-    
+
     public String getPlacingInfo() {
     	if (nextPointHandler != null && placingNow != null) {
     		return nextPointHandler.getCurrentPlacementStep().getCurrentStepInfo();
@@ -248,25 +241,25 @@ public abstract class StructureBuilder {
     		return "";
     	}
     }
-    
+
     public int getMode() {
     	return mode;
     }
-    
+
     public abstract void onUpdate();
-    
+
     private class NextPointHandler {
-        public int step = 0;
+        public int step;
         public boolean showingPreview = false;
-        
+
         public NextPointHandler(int step) {
         	this.step = step;
 		}
-        
+
         public NextPointHandler() {
         	this(0);
 		}
-        
+
         void handleNextPoint(short x, short y) {
             try {
                 getCurrentPlacementStep().place(x, y);
@@ -277,10 +270,10 @@ public abstract class StructureBuilder {
                 step++;
             }
         }
-        
+
         public PlacementStep getCurrentPlacementStep() {
         	return placingNow.getAllSteps()[step];
         }
-        
+
     }
 }

@@ -31,22 +31,21 @@ import mobileapplication3.ui.TextComponent;
  * @author vipaol
  */
 public class EditorUI extends Container {
-    
-    private final static int BTNS_IN_ROW = 4;
+
+    private final static int BUTTONS_IN_ROW = 4;
     public final static int FONT_H = Font.getDefaultFontHeight();
     public final static int BTN_H = FONT_H*2;
     public final static int MODE_STRUCTURE = 1, MODE_LEVEL = 2;
-
     private EditorCanvas editorCanvas = null;
     private ButtonRow bottomButtonPanel = null;
     private ButtonPanelHorizontal placementButtonPanel = null;
     private ButtonCol placedElementsList = null;
     private StartPointWarning startPointWarning = null;
-    private StructureBuilder elementsBuffer;
+    private final StructureBuilder elementsBuffer;
 
     private boolean isAutoSaveEnabled = true;    
-    private int mode;
-    
+    private final int mode;
+
     public EditorUI(int editorMode) {
     	mode = editorMode;
     	elementsBuffer = new StructureBuilder(mode) {
@@ -56,25 +55,15 @@ public class EditorUI extends Container {
             }
         };
 
-    	try {
-    		initEditorCanvas();
-
-            initBottomPanel();
-            
-            initStartPointWarning();
-
-            initPlacementPanel();
-            
-            initListPanel();
-            
-        } catch(Exception ex) {
-            Logger.log(ex);
-            Platform.showError(ex);
-        }
+        initEditorCanvas();
+        initBottomPanel();
+        initStartPointWarning();
+        initPlacementPanel();
+        initListPanel();
 
     	setComponents(new IUIComponent[]{editorCanvas, startPointWarning, placementButtonPanel, placedElementsList, bottomButtonPanel});
 	}
-    
+
     public EditorUI(int editorMode, Element[] elements, String path) {
 		this(editorMode);
 		elementsBuffer.setElements(elements);
@@ -106,7 +95,7 @@ public class EditorUI extends Container {
 	        		.setPos(bottomButtonPanel.getLeftX(), bottomButtonPanel.getTopY(), LEFT | BOTTOM);
         }
     }
-    
+
     public void paint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
         if (startPointWarning != null) {
             startPointWarning.setVisible(!StartPoint.checkStartPoint(elementsBuffer.getElementsAsArray()));
@@ -117,7 +106,7 @@ public class EditorUI extends Container {
     public String getFilePath() {
     	return elementsBuffer.getFilePath();
     }
-    
+
     public void setFilePath(String path) {
     	elementsBuffer.setFilePath(path);
     }
@@ -130,9 +119,7 @@ public class EditorUI extends Container {
 	    		String[] tmp = Utils.split(path, "/");
 	    		name = tmp[tmp.length - 1];
 	    	}
-    	} catch (Exception ex) {
-    		ex.printStackTrace();
-    	}
+    	} catch (Exception ignored) { }
     	return name;
     }
 
@@ -147,7 +134,7 @@ public class EditorUI extends Container {
     public void saveToFile(String path) throws SecurityException, IOException {
     	elementsBuffer.saveToFile(path);
     }
-    
+
     private void saveToAutoSave() {
     	if (isAutoSaveEnabled && elementsBuffer != null) {
     		new Thread(new Runnable() {
@@ -162,11 +149,11 @@ public class EditorUI extends Container {
 			}).start();
     	}
 	}
-    
+
     private void initEditorCanvas() {
-        editorCanvas = (EditorCanvas) new EditorCanvas(elementsBuffer);
+        editorCanvas = new EditorCanvas(elementsBuffer);
     }
-    
+
     private void initBottomPanel() {
     	Button placeButton = new Button("Place") {
             public void buttonPressed() {
@@ -175,21 +162,25 @@ public class EditorUI extends Container {
                 placementButtonPanel.setFocused(placementButtonPanel.getIsVisible());
             }
         };
+
         Button menuButton = new Button("Menu") {
             public void buttonPressed() {
                 showPopup(new EditorQuickMenu(EditorUI.this));
             }
         }.setBindedKeyCode(Keys.KEY_NUM0);
+
         Button zoomInButton = new Button("+") {
             public void buttonPressed() {
                 editorCanvas.zoomIn();
             }
         }.setBindedKeyCode(Keys.KEY_STAR);
+
         Button zoomOutButton = new Button("-") {
             public void buttonPressed() {
                 editorCanvas.zoomOut();
             }
         }.setBindedKeyCode(Keys.KEY_POUND);
+
         Button editButton = new Button("Edit") {
             public void buttonPressed() {
                 placementButtonPanel.setVisible(false);
@@ -199,16 +190,18 @@ public class EditorUI extends Container {
         };
 
 		Button[] bottomButtons = {placeButton, menuButton, zoomInButton, zoomOutButton, editButton};
-        bottomButtonPanel = (ButtonRow) new ButtonRow().setButtons(bottomButtons).setButtonsBgColor(BG_COLOR_HIGHLIGHTED);
+        bottomButtonPanel = (ButtonRow) new ButtonRow()
+                .setButtons(bottomButtons)
+                .setButtonsBgColor(BG_COLOR_HIGHLIGHTED);
         bottomButtonPanel.bindToSoftButtons();
     }
-    
+
     private void initStartPointWarning() {
     	if (mode == MODE_STRUCTURE) {
     		startPointWarning = (StartPointWarning) new StartPointWarning().setVisible(false);
     	}
     }
-    
+
     private void initPlacementPanel() {
         Button btnLine = new Button("Line") {
             public void buttonPressed() {
@@ -216,42 +209,42 @@ public class EditorUI extends Container {
                 placementButtonPanel.setVisible(false);
             }
         };
-        
+
         Button btnCircle = new Button("Circle") {
             public void buttonPressed() {
                 place(Element.CIRCLE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
-        
+
         Button btnSine = new Button("Sine") {
             public void buttonPressed() {
                 place(Element.SINE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
-        
+
         Button btnBrLine = new Button("Broken\nline") {
             public void buttonPressed() {
                 place(Element.BROKEN_LINE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
-        
+
         Button btnBrCircle = new Button("Broken\ncircle") {
             public void buttonPressed() {
                 place(Element.BROKEN_CIRCLE, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
-        
+
         Button btnAccel = new Button("Accele-\nrator") {
             public void buttonPressed() {
                 place(Element.ACCELERATOR, editorCanvas.getCursorX(), editorCanvas.getCursorY());
                 placementButtonPanel.setVisible(false);
             }
         };
-        
+
         Button btnFinish = new Button("Level-\nFinish") {
             public void buttonPressed() {
             	place(Element.LEVEL_FINISH, editorCanvas.getCursorX(), editorCanvas.getCursorY());
@@ -272,19 +265,19 @@ public class EditorUI extends Container {
                 placementButtonPanel.setVisible(false);
             }
         };
-        
+
         Button[] placementButtons;
         if (mode == MODE_STRUCTURE) {
         	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline, btnLava};
         } else {
         	placementButtons = new Button[] {btnLine, btnCircle, btnSine, btnBrLine, btnBrCircle.setIsActive(false), btnAccel, btnTrampoline, btnLava, btnFinish};
         }
-        placementButtonPanel = new ButtonPanelHorizontal(placementButtons)
-                .setBtnsInRowCount(BTNS_IN_ROW);
-        placementButtonPanel.setIsSelectionEnabled(true);
-        placementButtonPanel.setVisible(false);
+        placementButtonPanel = (ButtonPanelHorizontal) new ButtonPanelHorizontal(placementButtons)
+                .setBtnsInRowCount(BUTTONS_IN_ROW)
+                .setIsSelectionEnabled(true)
+                .setVisible(false);
     }
-    
+
     private void place(int id, int x, int y) {
     	elementsBuffer.place((short) id, (short) x, (short) y);
     	placedElementsList.setSelected(placedElementsList.getButtonCount() - 1);
@@ -305,59 +298,60 @@ public class EditorUI extends Container {
                 }
             };
         }
-        
+
         if (placedElementsList == null) {
-            placedElementsList = (ButtonCol) new ButtonCol() {
+            placedElementsList = new ButtonCol() {
             	public AbstractButtonSet setSelected(int selected) {
             		editorCanvas.selectedElement = selected;
             		return super.setSelected(selected);
             	}
             };
         }
-        
+
         placedElementsList
         		.setButtons(listButtons)
         		.setSelected(Mathh.constrain(0, placedElementsList.getSelected(), listButtons.length - 1))
 		        .setIsSelectionVisible(true)
 		        .setVisible(false);
     }
-    
+
     private void moveToZeros() {
     	StartPoint.moveToZeros(elementsBuffer.getElementsAsArray());
     }
 
     class StartPointWarning extends Container {
-    	TextComponent message;
-    	ButtonComponent button;
-    	
+    	private final TextComponent message;
+    	private final ButtonComponent button;
+
     	public StartPointWarning() {
     		setBgColor(COLOR_TRANSPARENT);
     		message = new TextComponent("Warn: start point of the structure should be on (x,y) 0 0");
     		message.setBgColor(COLOR_TRANSPARENT);
     		message.setFontColor(0xffff00);
     		Button button = new Button("Move to 0 0") {
-				public void buttonPressed() {
+                public void buttonPressed() {
 					moveToZeros();
 				}
 			}.setBgColor(0x002200);
     		this.button = new ButtonComponent(button).setBindedKeyCode(Keys.KEY_NUM7);
 		}
-    	
+
     	public void init() {
     		setComponents(new IUIComponent[] {message, this.button});
     	}
-    	
+
 		protected void onSetBounds(int x0, int y0, int w, int h) {
 			button.setSize(w, ButtonComponent.H_AUTO).setPos(x0, y0 + h, LEFT | BOTTOM);
 			message.setSize(w, h - button.getHeight()).setPos(x0, y0, LEFT | TOP);
 		}
-		
+
 		public int getOptimalW(int freeSpace) {
 			return Math.min(freeSpace, Font.defaultFontStringWidth(message.getText()) / 2);
 		}
-		
+
 		public int getOptimalH(int freeSpace) {
 			return Math.min(freeSpace, FONT_H * 10);
 		}
+
     }
 }

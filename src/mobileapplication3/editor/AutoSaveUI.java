@@ -8,22 +8,22 @@ import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.IUIComponent;
 
 public abstract class AutoSaveUI extends AbstractPopupPage {
+
 	private final static String
-	STORE_NAME_STRUCTURE_AUTOSAVE = "StructureAutoSave",
-	STORE_NAME_LEVEL_AUTOSAVE = "LevelAutoSave",
-	STORE_NAME_SUFFIX_FILE_PATH = "FilePath";
-	
+			STORE_NAME_STRUCTURE_AUTOSAVE = "StructureAutoSave",
+			STORE_NAME_LEVEL_AUTOSAVE = "LevelAutoSave",
+			STORE_NAME_SUFFIX_FILE_PATH = "FilePath";
 
 	public final static int STRUCTURE = EditorUI.MODE_STRUCTURE;
 	public final static int LEVEL = EditorUI.MODE_LEVEL;
 
-	private Element[] elements;
+	private final Element[] elements;
 
 	public AutoSaveUI(IPopupFeedback parent, Element[] elements) {
 		super("Some unsaved data can be recovered", parent);
 		this.elements = elements;
 	}
-	
+
 	public void init() {
 		super.init();
         actionButtons.setIsSelectionEnabled(true);
@@ -48,10 +48,10 @@ public abstract class AutoSaveUI extends AbstractPopupPage {
 	protected IUIComponent initAndGetPageContent() {
 		return new StructureViewerComponent(elements);
 	}
-	
+
 	public abstract void onRestore();
 	public abstract void onDelete();
-	
+
 	public static void autoSaveWrite(StructureBuilder data, String filePath, int storeID) throws Exception {
 		String storeName;
 		switch (storeID) {
@@ -99,11 +99,11 @@ public abstract class AutoSaveUI extends AbstractPopupPage {
                 break;
         }
 	}
-	
+
 	public static class AutoSaveData {
-		private Element[] elements;
-		private String filePath;
-		
+		private final Element[] elements;
+		private final String filePath;
+
 		public AutoSaveData(Element[] data, String filePath) {
 			this.elements = data;
 			if ("".equals(filePath)) {
@@ -111,11 +111,11 @@ public abstract class AutoSaveUI extends AbstractPopupPage {
 			}
 			this.filePath = filePath;
 		}
-		
+
 		public Element[] getElements() {
 			return elements;
 		}
-		
+
 		public String getPath() {
 			return filePath;
 		}

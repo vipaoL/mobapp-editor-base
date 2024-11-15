@@ -16,7 +16,7 @@ import mobileapplication3.ui.TextComponent;
  */
 public class Page4 extends AbstractSetupWizardPage {
     
-    private TextComponent text = new TextComponent();
+    private final TextComponent text = new TextComponent();
     
     public Page4(Button[] buttons, SetupWizard.Feedback feedback) {
         super("Let's get started", buttons, feedback);

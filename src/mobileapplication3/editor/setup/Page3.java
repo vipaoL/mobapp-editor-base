@@ -10,7 +10,7 @@ import mobileapplication3.ui.TextComponent;
  */
 public class Page3 extends AbstractSetupWizardPage {
     
-    private TextComponent text = new TextComponent();
+    private final TextComponent text = new TextComponent();
     
     public Page3(Button[] buttons, SetupWizard.Feedback feedback) {
         super("What are levels?", buttons, feedback);

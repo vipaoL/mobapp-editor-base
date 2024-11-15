@@ -18,29 +18,29 @@ import mobileapplication3.ui.Keys;
  */
 public class EditorCanvas extends StructureViewerComponent {
 	public static final int MODE_STRUCTURE = EditorUI.MODE_STRUCTURE, MODE_LEVEL = EditorUI.MODE_LEVEL;
-	
-	private static int zoomoutThresholdMacroMode = 200;
-    private StructureBuilder structureBuilder;
-    private Car car = new Car();
-    private int colBg = 0x000000;
+    private static final int COL_BG = 0x000000;
+
     private int cursorX, cursorY = 0;
     private int keyRepeats = 0;
     public int selectedElement = 0;
-    private int editMode;
-    
-    PointerHandler pointerHandler = new PointerHandler();
+    private int zoomOutMacroModeThreshold = 200;
+    private final int editMode;
+
+    private final StructureBuilder structureBuilder;
+    private final PointerHandler pointerHandler = new PointerHandler();
+    private final Car car = new Car();
 
     public EditorCanvas(StructureBuilder structureBuilder) {
     	super(structureBuilder.getElementsAsArray());
         this.structureBuilder = structureBuilder;
         editMode = structureBuilder.getMode();
     }
-    
+
     public void onPaint(Graphics g, int x0, int y0, int w, int h, boolean forceInactive) {
     	if (editMode == MODE_STRUCTURE) {
     		car.drawCar(g, x0, y0);
     	}
-        setElements(structureBuilder.getElementsAsArray());
+        setElements(structureBuilder.getElementsAsArray()); // TODO
         super.onPaint(g, x0, y0, w, h, forceInactive);
         if (editMode == MODE_STRUCTURE) {
         	drawStartPoint(g, x0, y0);
@@ -51,9 +51,9 @@ public class EditorCanvas extends StructureViewerComponent {
             g.drawString(structureBuilder.getPlacingInfo(), 0, 0, 0);
         }
     }
-    
+
     public void drawBg(Graphics g, int x0, int y0, int w, int h, boolean isActive) {
-    	g.setColor(colBg);
+    	g.setColor(COL_BG);
         g.fillRect(x0, y0, w, h);
         if (zoomOut < 200) {
             g.setColor(0x000077);
@@ -68,7 +68,7 @@ public class EditorCanvas extends StructureViewerComponent {
             }
         }
     }
-    
+
     private void drawCursor(Graphics g, int x0, int y0) {
         int x = x0 + xToPX(cursorX);
         int y = y0 + yToPX(cursorY);
@@ -77,15 +77,15 @@ public class EditorCanvas extends StructureViewerComponent {
         g.drawArc(x - r, y - r, r*2, r*2, 0, 360);
         g.drawString(cursorX + " " + cursorY, x, y + r, Graphics.TOP | Graphics.LEFT);
     }
-    
+
     protected void drawElements(Graphics g, int x0, int y0, Element[] elements) {
         for (int i = 0; i < elements.length; i++) {
         	try {
-	        	elements[i].paint(g, zoomOut, x0 + offsetX, y0 + offsetY, zoomOut > zoomoutThresholdMacroMode, i == selectedElement);
-        	} catch (Exception ex) { }
+	        	elements[i].paint(g, zoomOut, x0 + offsetX, y0 + offsetY, zoomOut > zoomOutMacroModeThreshold, i == selectedElement);
+        	} catch (Exception ignored) { }
         }
     }
-    
+
     private void drawStartPoint(Graphics g, int x0, int y0) {
         int d = 2;
         g.setColor(0x00ff00);
@@ -97,13 +97,13 @@ public class EditorCanvas extends StructureViewerComponent {
     	// thickness * 1000 / zoomOut >= minSide/16
     	// thickness * 16000 / minSide >= zoomOut
     	// threshold = thickness * 16000 / minSide
-    	zoomoutThresholdMacroMode = Element.LINE_THICKNESS * 16000 / Math.min(w, h);
+    	zoomOutMacroModeThreshold = Element.LINE_THICKNESS * 16000 / Math.min(w, h);
     	if (!isSizeSet()) {
     		zoomOut = Mathh.constrain(MIN_ZOOM_OUT, 4000000 / w, MAX_ZOOM_OUT);
     	}
-        recalcOffset();
+        recalculateOffset();
     }
-    
+
     public boolean canBeFocused() {
         return true;
     }
@@ -129,7 +129,7 @@ public class EditorCanvas extends StructureViewerComponent {
         if (count > 10) {
             count = 10;
         }
-        
+
         int minStep = count * count;
         int step = Math.max(minStep, zoomOut / 1000);
 		switch (RootContainer.getAction(keyCode)) {
@@ -145,7 +145,7 @@ public class EditorCanvas extends StructureViewerComponent {
         keyRepeats = 0;
         return true;
     }
-    
+
     public boolean handleKeyRepeated(int keyCode, int pressedCount) {
         int minStep = Math.max(zoomOut / 100, 1);
         int a = keyRepeats;
@@ -157,7 +157,7 @@ public class EditorCanvas extends StructureViewerComponent {
         keyRepeats = Math.min(100, keyRepeats + 1);
         return true;
     }
-    
+
     private boolean moveCursorByKeyboard(int keyCode, int step) {
     	switch (RootContainer.getAction(keyCode)) {
 	        case Keys.UP:
@@ -204,51 +204,51 @@ public class EditorCanvas extends StructureViewerComponent {
     public int getCursorY() {
         return cursorY;
     }
-    
+
     class Car {
-        int carbodyLength = 240;
-        int carbodyHeight = 40;
+        int carBodyLength = 240;
+        int carBodyHeight = 40;
         int wr = 40;
-        int carX = 0 - (carbodyLength / 2 - wr);
+        int carX = 0 - (carBodyLength / 2 - wr);
         int carY = 0 - wr / 2 * 3 - 2;
     
         void drawCar(Graphics g, int x0, int y0) {
-        	if (zoomOut < zoomoutThresholdMacroMode) {
+        	if (zoomOut < zoomOutMacroModeThreshold) {
         		return;
         	}
             g.setColor(0x444444);
-            g.drawRect(x0 + xToPX(carX - carbodyLength / 2),
-                    y0 + yToPX(carY - carbodyHeight / 2),
-                    carbodyLength*1000/zoomOut,
-                    carbodyHeight*1000/zoomOut);
-            int lwX = x0 + xToPX(carX - (carbodyLength / 2 - wr));
+            g.drawRect(x0 + xToPX(carX - carBodyLength / 2),
+                    y0 + yToPX(carY - carBodyHeight / 2),
+                    carBodyLength *1000/zoomOut,
+                    carBodyHeight *1000/zoomOut);
+            int lwX = x0 + xToPX(carX - (carBodyLength / 2 - wr));
             int lwY = y0 + yToPX(carY + wr / 2);
-            int rwX = x0 + xToPX(carX + (carbodyLength / 2 - wr));
+            int rwX = x0 + xToPX(carX + (carBodyLength / 2 - wr));
             int rwY = y0 + yToPX(carY + wr / 2);
-            
+
             int wrScaled = wr * 1000 / zoomOut;
-            g.setColor(colBg);
+            g.setColor(COL_BG);
             g.fillArc(lwX - wrScaled, lwY - wrScaled, wrScaled*2, wrScaled*2, 0, 360);
             g.fillArc(rwX - wrScaled, rwY - wrScaled, wrScaled*2, wrScaled*2, 0, 360);
             g.setColor(0x444444);
             g.drawArc(lwX - wrScaled, lwY - wrScaled, wrScaled*2, wrScaled*2, 0, 360);
             g.drawArc(rwX - wrScaled, rwY - wrScaled, wrScaled*2, wrScaled*2, 0, 360);
-            
-            int lineEndX = carX - carbodyLength / 2 - wr / 2;
+
+            int lineEndX = carX - carBodyLength / 2 - wr / 2;
             int lineStartX = lineEndX - wr;
-            int lineY = carY + carbodyHeight / 3;
+            int lineY = carY + carBodyHeight / 3;
             g.drawLine(x0 + xToPX(lineStartX), y0 + yToPX(lineY), x0 + xToPX(lineEndX), y0 + yToPX(lineY));
-            lineStartX += carbodyHeight / 3;
-            lineEndX += carbodyHeight / 3;
-            lineY += carbodyHeight / 3;
+            lineStartX += carBodyHeight / 3;
+            lineEndX += carBodyHeight / 3;
+            lineY += carBodyHeight / 3;
             g.drawLine(x0 + xToPX(lineStartX), y0 + yToPX(lineY), x0 + xToPX(lineEndX), y0 + yToPX(lineY));
-            lineStartX -= carbodyHeight * 2 / 3;
-            lineEndX -= carbodyHeight * 2 / 3;
-            lineY -= carbodyHeight * 2 / 3;
+            lineStartX -= carBodyHeight * 2 / 3;
+            lineEndX -= carBodyHeight * 2 / 3;
+            lineY -= carBodyHeight * 2 / 3;
             g.drawLine(x0 + xToPX(lineStartX), y0 + yToPX(lineY), x0 + xToPX(lineEndX), y0 + yToPX(lineY));
         }
     }
-    
+
     class PointerHandler {
         public boolean dragged = false;
         int pressedX, pressedY;
@@ -256,12 +256,12 @@ public class EditorCanvas extends StructureViewerComponent {
         int prevOffsetX, prevOffsetY;
         int lastCursorX = 0;
         int lastCursorY = 0;
-        
+
         void handlePointerPressed(int x, int y) {
             if (!isVisible) {
                 return;
             }
-            
+
             pressedX = x;
             pressedY = y;
             prevOffsetX = offsetX;
@@ -276,15 +276,15 @@ public class EditorCanvas extends StructureViewerComponent {
             if (!isVisible) {
                 return;
             }
-            
+
             int dx = x - pressedX;
             int dy = y - pressedY;
-            
+
             lastCursorX = cursorX;
             lastCursorY = cursorY;
             cursorX = prevCursorX + dx * zoomOut / 1000;
             cursorY = prevCursorY + dy * zoomOut / 1000;
-            
+
             onCursorMove();
             dragged = dragged || (dx != 0 || dy != 0);
         }
@@ -293,44 +293,44 @@ public class EditorCanvas extends StructureViewerComponent {
             if (!isVisible) {
                 return;
             }
-            
+
             if (!dragged) {
                 structureBuilder.handleNextPoint((short) cursorX, (short) cursorY, false);
             }
         }
-        
+
         void onCursorMove() {
             if (zoomOut < 500 && (lastCursorX != cursorX || lastCursorY != cursorY)) {
                 Platform.vibrate(1);
             }
 
-            recalcOffset();
+            recalculateOffset();
 
             structureBuilder.handleNextPoint((short) cursorX, (short) cursorY, true);
         }
     }
-    
+
     void zoomIn() {
         int newZoomOut = zoomOut / 2;
         if (newZoomOut > MIN_ZOOM_OUT) {
             zoomOut = newZoomOut;
         }
-        recalcOffset();
+        recalculateOffset();
     }
-    
+
     void zoomOut() {
         int newZoomOut = zoomOut * 2;
         if (newZoomOut < MAX_ZOOM_OUT) {
             zoomOut = newZoomOut;
         }
-        recalcOffset();
+        recalculateOffset();
     }
-    
-    void recalcOffset() {
+
+    void recalculateOffset() {
         offsetX = w/2 - cursorX * 1000 / zoomOut;
         offsetY = h/2 - cursorY * 1000 / zoomOut;
     }
-    
+
     public int xToPX(int c) {
         return c * 1000 / zoomOut + offsetX;
     }
@@ -338,4 +338,5 @@ public class EditorCanvas extends StructureViewerComponent {
     public int yToPX(int c) {
         return c * 1000 / zoomOut + offsetY;
     }
+
 }

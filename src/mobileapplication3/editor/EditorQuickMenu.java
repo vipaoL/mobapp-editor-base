@@ -49,7 +49,7 @@ public class EditorQuickMenu extends AbstractPopupPage {
                 RootContainer.setRootUIComponent(new mobileapplication3.game.GameplayCanvas(parent).loadLevel(parent.getData()));
             }
         }.setBgColor(0x112211).setSelectedColor(0x115511).setIsActive(gameIncluded);
-        
+
         Button saveButton = new Button("Save as \"" + parent.getFileName() + "\"") {
             public void buttonPressed() {
             	close();
@@ -62,6 +62,7 @@ public class EditorQuickMenu extends AbstractPopupPage {
                 }
             }
         }.setBindedKeyCode(Keys.KEY_NUM8).setIsActive(parent.getFilePath() != null);
+
         Button saveAsButton = new Button("Save as...") {
             public void buttonPressed() {
             	close();
@@ -122,5 +123,5 @@ public class EditorQuickMenu extends AbstractPopupPage {
                     .setPos(x0 + w/2, y0 + h - margin, BOTTOM | HCENTER);
         }
     }
-    
+
 }

@@ -14,14 +14,12 @@ import mobileapplication3.ui.IUIComponent;
  * @author vipaol
  */
 public class Page1 extends AbstractSetupWizardPage {
-    
+
     public Page1(Button[] buttons, SetupWizard.Feedback feedback) {
         super("Welcome to the editor for mobapp-game", buttons, feedback);
     }
-    
-    public void initOnFirstShow() {
-        
-    }
+
+    public void initOnFirstShow() { }
 
     protected IUIComponent initAndGetPageContent() {
     	return About.getAppLogo();
@@ -34,5 +32,5 @@ public class Page1 extends AbstractSetupWizardPage {
         pageContent.setSize(logoSide, logoSide)
                 .setPos(x0 + w / 2, y0 + h / 2, IUIComponent.VCENTER | IUIComponent.HCENTER);
     }
-    
+
 }

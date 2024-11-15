@@ -8,23 +8,23 @@ import mobileapplication3.platform.ui.Graphics;
 import mobileapplication3.ui.UIComponent;
 
 public class StructureViewerComponent extends UIComponent {
-	
+
 	protected static final int MIN_ZOOM_OUT = 8, MAX_ZOOM_OUT = 200000;
 
     protected int offsetX, offsetY, zoomOut = 8192;
 	protected short start, end;
-	
+
 	protected Element[] elements = new Element[0];
-	
+
 	public StructureViewerComponent() {
 		setBgColor(COLOR_ACCENT_MUTED);
 	}
-	
+
 	public StructureViewerComponent(Element[] elements) {
 		this();
 		setElements(elements);
 	}
-	
+
 	public void setElements(Element[] elements) {
 		this.elements = elements;
 		start = StartPoint.findStartPoint(elements)[0];
@@ -50,24 +50,22 @@ public class StructureViewerComponent extends UIComponent {
 			g.drawString(ex.toString(), x0, y0, TOP | LEFT);
 		}
 	}
-	
+
 	protected void drawElements(Graphics g, int x0, int y0, Element[] elements) {
         for (int i = 0; i < elements.length; i++) {
         	try {
 	        	elements[i].paint(g, zoomOut, x0 + offsetX, y0 + offsetY, true, false);
-        	} catch (Exception ex) { }
+        	} catch (Exception ignored) { }
         }
     }
-	
+
 	protected void onSetBounds(int x0, int y0, int w, int h) {
 		zoomOut = Mathh.constrain(MIN_ZOOM_OUT, 4000000 / Math.min(w, h), MAX_ZOOM_OUT);
 		zoomOut = Math.max(zoomOut, 1000*(end - start)*3/w/2);
 		offsetX = w/2;
-		try {
+		if (zoomOut != 0) {
 			offsetX -= (end + start) / 2 * 1000 / zoomOut;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+			}
 		offsetY = h/2;
 	}
 

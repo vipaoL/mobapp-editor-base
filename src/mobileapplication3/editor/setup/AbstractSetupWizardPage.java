@@ -14,9 +14,9 @@ import mobileapplication3.ui.Page;
  */
 public abstract class AbstractSetupWizardPage extends Page {
     private boolean isInited = false;
-    private Button[] buttons;
+    private final Button[] buttons;
     protected SetupWizard.Feedback feedback;
-    
+
     public AbstractSetupWizardPage(String title, Button[] actionButtons, SetupWizard.Feedback feedback) {
         super(title);
         buttons = actionButtons;
@@ -29,7 +29,7 @@ public abstract class AbstractSetupWizardPage extends Page {
         }
         this.feedback = feedback;
     }
-    
+
     public void init() {
     	super.init();
         actionButtons.setIsSelectionEnabled(true);
@@ -40,15 +40,16 @@ public abstract class AbstractSetupWizardPage extends Page {
     protected Button[] getActionButtons() {
         return buttons;
     }
-    
+
     public final void onShow() {
         if (isInited) {
             return;
         }
-        
+
         initOnFirstShow();
         isInited = true;
     }
-    
+
     public abstract void initOnFirstShow();
+
 }

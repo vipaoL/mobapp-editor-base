@@ -11,9 +11,9 @@ import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.UIComponent;
 
 public class LevelsMenu extends AbstractEditorMenu {
-	
+
 	private String path = null;
-	
+
 	public LevelsMenu(final IPopupFeedback parent) {
 		super(parent, "Levels");
 	}
@@ -24,7 +24,7 @@ public class LevelsMenu extends AbstractEditorMenu {
 		}
 		return path;
 	}
-	
+
 	public UIComponent[] getGridContent() {
 		Vector gridContentVector = new Vector();
 		String[] files = { };
@@ -49,7 +49,7 @@ public class LevelsMenu extends AbstractEditorMenu {
 		}
 		return gridContent;
 	}
-	
+
 	public Button[] getList() {
 		String[] files = null;
 		try {
@@ -71,9 +71,9 @@ public class LevelsMenu extends AbstractEditorMenu {
 		}
 		return buttons;
 	}
-	
+
 	private class StructureViewerInteractive extends StructureViewerComponent {
-		private String path;
+		private final String path;
 		public StructureViewerInteractive(Element[] mgStruct, String path) {
 			super(mgStruct);
 			this.path = path;
@@ -82,26 +82,26 @@ public class LevelsMenu extends AbstractEditorMenu {
 		public boolean canBeFocused() {
 			return true;
 		}
-		
+
 		protected boolean handlePointerClicked(int x, int y) {
 			openInEditor();
 			return true;
 		}
-		
+
 		protected boolean handleKeyPressed(int keyCode, int count) {
 			openInEditor();
 			return true;
 		}
-		
+
 		public void openInEditor() {
 			LevelsMenu.this.openInEditor(elements, path);
 		}
 	}
-	
+
 	public void openInEditor(String path) {
 		openInEditor(MGStructs.readMGStruct(path), path);
 	}
-	
+
 	public void openInEditor(Element[] elements, String path) {
 		RootContainer.setRootUIComponent(new EditorUI(EditorUI.MODE_LEVEL, elements, path));
 	}

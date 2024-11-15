@@ -16,10 +16,10 @@ import mobileapplication3.ui.IUIComponent;
  * @author vipaol
  */
 public class SetupWizard extends Container {
-    
+
     private int currentPageI = 0;
-    private FinishSetup finishSetup;
-    private Feedback pageSwitcher = new Feedback() {
+    private final FinishSetup finishSetup;
+    private final Feedback pageSwitcher = new Feedback() {
         public void nextPage() {
             Logger.log(currentPageI + " - current. switching to next page");
             setCurrentPage(currentPageI + 1);
@@ -29,17 +29,17 @@ public class SetupWizard extends Container {
             Logger.log(currentPageI + " - current. switching to prev page");
             setCurrentPage(currentPageI - 1);
         }
-        
+
         public void needRepaint() {
             repaint();
         }
     };
-    
+
     private AbstractSetupWizardPage[] pages;
-    
+
     public SetupWizard(FinishSetup finishSetup) {
         this.finishSetup = finishSetup;
-        
+
         pages = new AbstractSetupWizardPage[]{
             new Page1(new Button[]{getNewNextButton()}, pageSwitcher),
             new Page2(new Button[]{getNewPrevButton(), getNewNextButton()}, pageSwitcher),
@@ -48,7 +48,7 @@ public class SetupWizard extends Container {
             new Page5(new Button[]{getNewPrevButton(), getNewNextButton()}, pageSwitcher)
         };
     }
-    
+
     public void init() {
     	for (int i = 0; i < pages.length; i++) {
         	pages[i].setParent(this);

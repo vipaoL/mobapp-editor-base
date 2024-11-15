@@ -11,10 +11,10 @@ import mobileapplication3.ui.IPopupFeedback;
 import mobileapplication3.ui.IUIComponent;
 
 public class ElementEditUI extends AbstractPopupPage {
-	
-	private Element element;
+
+	private final Element element;
 	private Button[] rows;
-	private StructureBuilder sb;
+	private final StructureBuilder sb;
 
 	public ElementEditUI(Element element, StructureBuilder sb, IPopupFeedback parent) {
 		super("Edit " + element.getName(), parent);
@@ -41,7 +41,7 @@ public class ElementEditUI extends AbstractPopupPage {
 				}
 			};
 		}
-		
+
 		for (int i = 0; i < extraEditSteps.length; i++) {
 			final int o = i + editSteps.length;
 			rows[o] = new Button(extraEditSteps[i].getName()) {
@@ -51,7 +51,7 @@ public class ElementEditUI extends AbstractPopupPage {
 				}
 			}.setBgColor(0x201010);
 		}
-		
+
 		Button cloneButton = new Button("Clone") {
 			public void buttonPressed() {
 				Element clone = element.clone();
@@ -60,32 +60,32 @@ public class ElementEditUI extends AbstractPopupPage {
 				close();
 			}
 		};
-		
+
 		final IPopupFeedback fb = this;
 		Button advancedEditButton = new Button("AdvancedEdit") {
 			public void buttonPressed() {
 				showPopup(new AdvancedElementEditUI(element, sb, fb));
 			}
 		}.setBgColor(BG_COLOR_WARN);
-		
+
 		Button deleteButton = new Button("Delete element") {
 			public void buttonPressed() {
 				sb.remove(element);
 				close();
 			}
 		}.setBgColor(BG_COLOR_DANGER);
-		
+
 		if (element instanceof EndPoint) {
 			cloneButton.setIsActive(false);
 			deleteButton.setIsActive(false);
 		}
-		
+
 		rows[rows.length - 3] = (cloneButton);
 		rows[rows.length - 2] = (advancedEditButton);
 		rows[rows.length - 1] = (deleteButton);
-		
+
 		return new ButtonCol(rows) {
-			public final void onSetBounds(int x0, int y0, int w, int h) {
+			public void onSetBounds(int x0, int y0, int w, int h) {
 				setButtonsBgPadding(getBtnH()/16);
 				super.onSetBounds(x0, y0, w, h);
 			}

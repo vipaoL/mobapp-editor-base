@@ -31,6 +31,7 @@ public class Circle extends AbstractCurve {
 				public String getCurrentStepInfo() {
 					return "x=" + x + " y=" + y;
 				}
+
             },
             new PlacementStep() {
                 public void place(short pointX, short pointY) {

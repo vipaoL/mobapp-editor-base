@@ -114,7 +114,7 @@ public class SettingsUI extends AbstractPopupPage {
                 }
             }.setBgColor(0x550000)
         };
-        
+
         return new ButtonCol(settingsButtons);
     }
     
@@ -126,5 +126,4 @@ public class SettingsUI extends AbstractPopupPage {
                     .setPos(x0 + w/2, y0 + h - margin, BOTTOM | HCENTER);
         }
     }
-    
 }

@@ -14,13 +14,13 @@ import mobileapplication3.ui.TextComponent;
  * @author vipaol
  */
 public class Page2 extends AbstractSetupWizardPage {
-    
-    private TextComponent text = new TextComponent();
-    
+
+    private final TextComponent text = new TextComponent();
+
     public Page2(Button[] buttons, SetupWizard.Feedback feedback) {
         super("What are structures?", buttons, feedback);
     }
-    
+
     public void init() {
     	super.init();
     	actionButtons.setSelected(actionButtons.getButtonCount() - 1);

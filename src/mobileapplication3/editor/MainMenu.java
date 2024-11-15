@@ -14,9 +14,9 @@ import mobileapplication3.ui.TextComponent;
 import mobileapplication3.ui.UIComponent;
 
 public class MainMenu extends Container {
-	private TextComponent title;
-	private UIComponent logo;
-	private ButtonCol buttons;
+	private final TextComponent title;
+	private final UIComponent logo;
+	private final ButtonCol buttons;
 	private boolean isAutoSaveEnabled = true;
 	private static boolean autoSaveCheckDone = false;
 
