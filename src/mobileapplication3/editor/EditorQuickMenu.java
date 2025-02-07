@@ -50,6 +50,12 @@ public class EditorQuickMenu extends AbstractPopupPage {
             }
         }.setBgColor(0x112211).setSelectedColor(0x115511).setIsActive(gameIncluded);
 
+        Button structureTestButton = new Button("Test this structure in the game") {
+            public void buttonPressed() {
+                RootContainer.setRootUIComponent(new mobileapplication3.game.GameplayCanvas(parent).addDeferredStructure(parent.getData()));
+            }
+        }.setBgColor(0x112211).setSelectedColor(0x115511).setIsActive(gameIncluded);
+
         Button saveButton = new Button("Save as \"" + parent.getFileName() + "\"") {
             public void buttonPressed() {
             	close();
@@ -108,7 +114,7 @@ public class EditorQuickMenu extends AbstractPopupPage {
 
         Button[] buttons = null;
         if (parent.getMode() == EditorUI.MODE_STRUCTURE) {
-            buttons = new Button[]{saveButton, saveAsButton, menuButton};
+            buttons = new Button[]{structureTestButton, saveButton, saveAsButton, menuButton};
         } else if (parent.getMode() == EditorUI.MODE_LEVEL) {
             buttons = new Button[]{levelTestButton, saveButton, saveAsButton, menuButton};
         }
